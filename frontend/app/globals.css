@@ -256,7 +256,7 @@ button, input, select, textarea {
 
 .logo {
   font-family: var(--font-heading);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 1.5px;
   color: var(--bg-primary);
