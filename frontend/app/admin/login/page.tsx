@@ -4,13 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchAPI } from '@/lib/api';
 import { useRouter } from 'next/navigation';
-import { Shield, KeyRound, AlertTriangle } from 'lucide-react';
+import { Shield, KeyRound, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminLoginPage() {
   const { login, isAdmin, isInitialized } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function AdminLoginPage() {
           }}>
             <Shield size={28} />
           </div>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
+          <h1 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
             Quản trị cửa hàng
           </h1>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '5px' }}>
@@ -111,13 +112,30 @@ export default function AdminLoginPage() {
             <label className="form-label">Mật khẩu *</label>
             <div style={{ position: 'relative' }}>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
                 className="form-control"
                 placeholder="Nhập mật khẩu"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                style={{ paddingRight: '40px' }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
@@ -125,7 +143,7 @@ export default function AdminLoginPage() {
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            style={{ width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.65rem' }}
           >
             <KeyRound size={16} /> {loading ? 'Đang xác thực...' : 'Đăng nhập'}
           </button>

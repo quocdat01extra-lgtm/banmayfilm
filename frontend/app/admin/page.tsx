@@ -490,7 +490,7 @@ export default function AdminDashboardPage() {
       {/* Sidebar Navigation */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div style={{ padding: '15px', backgroundColor: 'var(--bg-dark)', color: '#fff', borderRadius: '6px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>BANMAYFILM</h2>
+          <h2 style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>BANMAYFILM</h2>
           <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>Quản trị hệ thống</span>
         </div>
 
@@ -592,8 +592,8 @@ export default function AdminDashboardPage() {
             {activeTab === 'products' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Danh sách sản phẩm</h2>
-                  <button onClick={openAddProduct} className="btn btn-accent" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+                  <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Danh sách sản phẩm</h2>
+                  <button onClick={openAddProduct} className="btn btn-accent" style={{ padding: '8px 16px', fontSize: '0.65rem' }}>
                     <Plus size={16} /> Thêm sản phẩm
                   </button>
                 </div>
@@ -684,8 +684,8 @@ export default function AdminDashboardPage() {
             {activeTab === 'banners' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Quản lý Banners</h2>
-                  <button onClick={() => setBannerModalOpen(true)} className="btn btn-accent" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+                  <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Quản lý Banners</h2>
+                  <button onClick={() => setBannerModalOpen(true)} className="btn btn-accent" style={{ padding: '8px 16px', fontSize: '0.65rem' }}>
                     <Plus size={16} /> Thêm Banner
                   </button>
                 </div>
@@ -716,7 +716,7 @@ export default function AdminDashboardPage() {
             {/* 3. Orders history management tab */}
             {activeTab === 'orders' && (
               <div>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
+                <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
                   Lịch sử đơn hàng
                 </h2>
 
@@ -783,7 +783,7 @@ export default function AdminDashboardPage() {
             {activeTab === 'reports' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Báo cáo doanh thu</h2>
+                  <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Báo cáo doanh thu</h2>
                   
                   {/* Select Year */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -807,7 +807,7 @@ export default function AdminDashboardPage() {
                     <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--bg-secondary)', marginBottom: '30px' }}>
                       <div>
                         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Tổng doanh thu năm {reportYear}</span>
-                        <h3 style={{ fontSize: '1.7rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '5px' }}>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '5px' }}>
                           {formatVND(reportData.totalYearRevenue)}
                         </h3>
                       </div>
@@ -978,7 +978,7 @@ export default function AdminDashboardPage() {
         <div className="modal-overlay">
           <div className="modal-content" style={{ padding: '24px', maxWidth: '600px' }}>
             <button onClick={() => setProductModalOpen(false)} className="close-btn"><X size={18} /></button>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
               {selectedProduct ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}
             </h3>
 
@@ -1112,7 +1112,7 @@ export default function AdminDashboardPage() {
         <div className="modal-overlay">
           <div className="modal-content" style={{ padding: '24px', maxWidth: '500px' }}>
             <button onClick={() => setBannerModalOpen(false)} className="close-btn"><X size={18} /></button>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
               Thêm banner mới
             </h3>
 
@@ -1155,7 +1155,7 @@ export default function AdminDashboardPage() {
               setSelectedProductForMedia(null);
             }} className="close-btn"><X size={18} /></button>
             
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px', fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '10px', fontFamily: 'var(--font-heading)' }}>
               Quản lý hình ảnh/video sản phẩm
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
@@ -1227,7 +1227,7 @@ export default function AdminDashboardPage() {
           <div className="modal-content" style={{ padding: '24px', maxWidth: '750px' }}>
             <button onClick={() => setOrderModalOpen(false)} className="close-btn"><X size={18} /></button>
             
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
               Chi tiết và Cập nhật đơn hàng
             </h3>
 

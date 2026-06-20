@@ -104,7 +104,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
         </span>
         
         <h3 style={{ 
-          fontSize: '0.9rem', 
+          fontSize: '0.7rem', 
           lineHeight: '1.4', 
           fontWeight: 600,
           color: 'var(--text-primary)',
@@ -120,7 +120,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
 
         <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <span style={{ 
-            fontSize: '0.95rem', 
+            fontSize: '0.75rem', 
             fontWeight: 700, 
             color: 'var(--text-primary)' 
           }}>

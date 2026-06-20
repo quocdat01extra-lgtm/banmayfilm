@@ -59,7 +59,7 @@ export default function RootLayout({
                   marginTop: 'auto'
                 }}>
                   <div className="container">
-                    <p style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', color: 'var(--bg-primary)', marginBottom: '10px', letterSpacing: '1px' }}>BANMAYFILM</p>
+                    <p style={{ fontFamily: 'var(--font-heading)', fontSize: '0.85rem', color: 'var(--bg-primary)', marginBottom: '10px', letterSpacing: '1px' }}>BANMAYFILM</p>
                     <p style={{ marginBottom: '8px' }}>Địa chỉ: MB Bank - NGUYEN PHUONG ANH - 0335532664</p>
                     <div className="footer-social-links">
                       <a href="https://www.tiktok.com/@bn.my.film?_r=1&_t=ZS-91rHcEmfS2k" target="_blank" rel="noopener noreferrer" className="footer-social-link" title="TikTok">

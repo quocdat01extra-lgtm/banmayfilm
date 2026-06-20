@@ -72,7 +72,7 @@ export const CompareModal: React.FC = () => {
         </button>
 
         <h2 style={{
-          fontSize: '1.3rem',
+          fontSize: '1.1rem',
           fontWeight: 700,
           marginBottom: '20px',
           fontFamily: 'var(--font-heading)',
@@ -120,7 +120,7 @@ export const CompareModal: React.FC = () => {
                         alt={product.name}
                         style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }}
                       />
-                      <span style={{ fontSize: '0.85rem', display: 'block', minHeight: '40px', lineHeight: 1.3 }}>
+                      <span style={{ fontSize: '0.65rem', display: 'block', minHeight: '40px', lineHeight: 1.3 }}>
                         {product.name}
                       </span>
                       <button
@@ -154,7 +154,7 @@ export const CompareModal: React.FC = () => {
                       textAlign: 'center',
                       fontWeight: 700,
                       color: 'var(--accent)',
-                      fontSize: '1rem',
+                      fontSize: '0.8rem',
                       borderRight: '1px solid var(--border-color)'
                     }}
                   >

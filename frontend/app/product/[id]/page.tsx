@@ -320,7 +320,7 @@ export default function ProductDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
           {/* Title */}
           <h1 style={{
-            fontSize: '1.8rem',
+            fontSize: '1.6rem',
             fontWeight: 700,
             lineHeight: 1.25,
             marginBottom: '15px',
@@ -379,7 +379,7 @@ export default function ProductDetailPage() {
           }}>
             <div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Giá bán:</div>
-              <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              <span style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 {formatVND(product.price)}
               </span>
             </div>
@@ -401,14 +401,14 @@ export default function ProductDetailPage() {
               onClick={handleAddToCart}
               disabled={product.quantity <= 0}
               className="btn btn-primary"
-              style={{ flexGrow: 2, padding: '15px', fontSize: '0.9rem' }}
+              style={{ flexGrow: 2, padding: '15px', fontSize: '0.7rem' }}
             >
               <ShoppingCart size={20} /> Thêm vào giỏ hàng
             </button>
             <button
               onClick={handleAddToCompare}
               className="btn btn-secondary"
-              style={{ flexGrow: 1, padding: '15px', fontSize: '0.9rem' }}
+              style={{ flexGrow: 1, padding: '15px', fontSize: '0.7rem' }}
             >
               <ArrowLeftRight size={20} /> So sánh sản phẩm
             </button>

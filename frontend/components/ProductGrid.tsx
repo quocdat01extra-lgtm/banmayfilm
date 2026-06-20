@@ -61,7 +61,7 @@ export const ProductGrid: React.FC = () => {
       {/* Category Navigation - Sidebar on Desktop, Horizontal Tabs inline for Mobile */}
       <div className="category-navigation">
         <h3 style={{
-          fontSize: '1.05rem',
+          fontSize: '0.85rem',
           fontWeight: 700,
           marginBottom: '15px',
           color: 'var(--text-primary)',
@@ -140,7 +140,7 @@ export const ProductGrid: React.FC = () => {
       {/* Product Grid Area */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
             {selectedCategory 
               ? categories.find(c => c.id === selectedCategory)?.name 
               : 'Tất cả sản phẩm'

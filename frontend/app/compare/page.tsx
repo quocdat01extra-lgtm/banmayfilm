@@ -53,7 +53,7 @@ export default function ComparePage() {
     return (
       <div className="container" style={{ padding: '80px 20px', textAlign: 'center' }}>
         <ArrowLeftRight size={48} style={{ color: 'var(--text-secondary)', marginBottom: '20px' }} />
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', marginBottom: '15px' }}>Chưa có sản phẩm để so sánh</h2>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', marginBottom: '15px' }}>Chưa có sản phẩm để so sánh</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '30px', fontSize: '1rem' }}>
           Hãy thêm ít nhất 2 sản phẩm vào danh sách so sánh từ trang chủ.
         </p>
@@ -89,7 +89,7 @@ export default function ComparePage() {
 
       {/* Page Title */}
       <h1 style={{
-        fontSize: '1.7rem',
+        fontSize: '1.5rem',
         fontWeight: 700,
         fontFamily: 'var(--font-heading)',
         marginBottom: '25px',

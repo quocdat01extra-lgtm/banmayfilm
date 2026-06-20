@@ -269,7 +269,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
           }}>
             {/* Title */}
             <h2 style={{
-              fontSize: '1.5rem',
+              fontSize: '1.3rem',
               fontWeight: 700,
               lineHeight: 1.2,
               marginBottom: '15px',
@@ -315,7 +315,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
 
             {/* Price */}
             <div style={{ marginBottom: '20px' }}>
-              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 {formatVND(product.price)}
               </span>
               <span style={{ marginLeft: '12px', fontSize: '0.85rem', color: product.quantity > 0 ? 'var(--text-secondary)' : 'var(--danger)', fontWeight: 600 }}>
