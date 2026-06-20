@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
@@ -6,6 +7,21 @@ import { CompareProvider } from '@/contexts/CompareContext';
 import Header from '@/components/Header';
 import CompareBar from '@/components/CompareBar';
 import CompareModal from '@/components/CompareModal';
+
+const inter = Inter({
+  subsets: ['vietnamese', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['vietnamese', 'latin'],
+  weight: ['400', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-playfair',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'BANMAYFILM - Máy Ảnh Film Vintage',
@@ -19,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi">
+    <html lang="vi" className={`${inter.variable} ${playfairDisplay.variable}`}>
       <body>
         <AuthProvider>
           <CartProvider>
