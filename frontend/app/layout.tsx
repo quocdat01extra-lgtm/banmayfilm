@@ -6,7 +6,6 @@ import { CartProvider } from '@/contexts/CartContext';
 import { CompareProvider } from '@/contexts/CompareContext';
 import Header from '@/components/Header';
 import CompareBar from '@/components/CompareBar';
-import CompareModal from '@/components/CompareModal';
 
 const inter = Inter({
   subsets: ['vietnamese', 'latin'],
@@ -80,9 +79,8 @@ export default function RootLayout({
                   </div>
                 </footer>
 
-                {/* Fixed Bottom Comparison Elements */}
+                {/* Fixed Bottom Comparison Bar */}
                 <CompareBar />
-                <CompareModal />
               </div>
             </CompareProvider>
           </CartProvider>

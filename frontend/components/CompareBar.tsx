@@ -1,17 +1,18 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { useCompare } from '@/contexts/CompareContext';
 import { formatVND } from './ProductCard';
 import { X, ArrowLeftRight, ChevronUp, ChevronDown } from 'lucide-react';
 
 export const CompareBar: React.FC = () => {
+  const router = useRouter();
   const {
     compareList,
     removeFromCompare,
     isBarVisible,
     setBarVisible,
-    setCompareModalOpen,
   } = useCompare();
 
   if (compareList.length === 0) return null;
@@ -98,7 +99,7 @@ export const CompareBar: React.FC = () => {
           {/* Right section: Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
-              onClick={() => setCompareModalOpen(true)}
+              onClick={() => router.push('/compare')}
               disabled={compareList.length < 2}
               className="btn btn-accent"
               style={{

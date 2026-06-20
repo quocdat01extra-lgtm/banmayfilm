@@ -85,7 +85,7 @@ interface Order {
 export default function AdminDashboardPage() {
   const { isAdmin, isInitialized, token, logout } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'products' | 'banners' | 'orders' | 'reports' | 'config'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'banners' | 'orders' | 'reports'>('products');
 
   // API Config State
   const [apiUrl, setApiUrl] = useState('');
@@ -522,35 +522,7 @@ export default function AdminDashboardPage() {
           >
             <BarChart3 size={16} /> Báo cáo doanh thu
           </button>
-
-          <button
-            onClick={() => setActiveTab('config')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              width: '100%',
-              padding: '10px 12px',
-              border: 'none',
-              borderRadius: '4px',
-              backgroundColor: activeTab === 'config' ? 'var(--bg-dark)' : 'transparent',
-              color: activeTab === 'config' ? 'var(--bg-primary)' : 'var(--text-primary)',
-              fontWeight: activeTab === 'config' ? 600 : 500,
-              textAlign: 'left',
-              cursor: 'pointer'
-            }}
-          >
-            <Settings size={16} /> Cấu hình API
-          </button>
         </div>
-
-        <button
-          onClick={logout}
-          className="btn btn-secondary"
-          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-        >
-          <LogOut size={16} /> Đăng xuất
-        </button>
       </div>
 
       {/* Main Dashboard Panel Content */}
@@ -873,44 +845,6 @@ export default function AdminDashboardPage() {
                       })}
                     </div>
 
-                    {/* Data Table */}
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid var(--bg-dark)' }}>
-                            <th style={{ padding: '10px' }}>Tháng</th>
-                            <th style={{ padding: '10px' }}>Số đơn hàng</th>
-                            <th style={{ padding: '10px', textAlign: 'right' }}>Doanh thu</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {reportData.monthlyRevenue.map((m) => {
-                            const isSelected = selectedMonth === m.month;
-                            return (
-                              <tr 
-                                key={m.month} 
-                                onClick={() => fetchMonthlyDetail(m.month)}
-                                style={{ 
-                                  borderBottom: '1px solid var(--border-color)',
-                                  cursor: 'pointer',
-                                  backgroundColor: isSelected ? 'rgba(184, 134, 11, 0.08)' : 'transparent',
-                                  transition: 'background-color 0.2s'
-                                }}
-                              >
-                                <td style={{ padding: '10px', fontWeight: 600, color: isSelected ? 'var(--accent)' : 'inherit' }}>
-                                  Tháng {m.month} {isSelected && '✓'}
-                                </td>
-                                <td style={{ padding: '10px' }}>{m.orderCount} đơn hàng</td>
-                                <td style={{ padding: '10px', fontWeight: 600, textAlign: 'right', color: isSelected ? 'var(--accent)' : 'inherit' }}>
-                                  {formatVND(m.revenue)}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-
                     {/* Monthly product details drill-down */}
                     {(selectedMonth !== null || loadingDetail || monthlyDetail) && (
                       <div style={{ marginTop: '45px', borderTop: '1px solid var(--border-color)', paddingTop: '25px' }}>
@@ -982,35 +916,6 @@ export default function AdminDashboardPage() {
               </div>
             )}
 
-            {/* 5. API Config tab */}
-            {activeTab === 'config' && (
-              <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  Cấu hình API kết nối
-                </h2>
-                
-                <div style={{ maxWidth: '600px' }}>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
-                    Cho phép điều chỉnh URL kết nối đến Backend API. Giá trị này được lưu trong trình duyệt của bạn (localStorage), giúp kiểm thử dễ dàng giữa môi trường cục bộ và production.
-                  </p>
-
-                  <div className="form-group" style={{ marginBottom: '25px' }}>
-                    <label className="form-label">Backend API URL (Hiện tại)</label>
-                    <input
-                      type="url"
-                      className="form-control"
-                      value={apiUrl}
-                      onChange={(e) => setApiUrl(e.target.value)}
-                      placeholder="http://localhost:3001"
-                    />
-                  </div>
-
-                  <button onClick={saveApiUrlConfig} className="btn btn-accent" style={{ padding: '10px 20px' }}>
-                    <Check size={16} /> Lưu cấu hình
-                  </button>
-                </div>
-              </div>
-            )}
           </>
         )}
 
