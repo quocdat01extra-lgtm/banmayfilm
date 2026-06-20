@@ -100,6 +100,44 @@ export default function ProductDetailPage() {
 
   const currentMedia = mediaList[mediaIndex];
 
+  const renderSpecifications = () => {
+    if (!product.specifications) return 'Chưa có thông số kỹ thuật chi tiết.';
+    
+    try {
+      const parsed = JSON.parse(product.specifications);
+      const catName = product.categories?.name;
+      
+      if (catName === 'Máy ảnh') {
+        return (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <tbody>
+              {parsed.tieu_cu && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600, width: '40%' }}>Tiêu cự</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.tieu_cu}</td></tr>}
+              {parsed.khau_do && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Khẩu độ</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.khau_do}</td></tr>}
+              {parsed.chat_luong_anh && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Chất lượng ảnh</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.chat_luong_anh}</td></tr>}
+              {parsed.af && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>AF</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.af}</td></tr>}
+              {parsed.chong_nuoc && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Chống nước</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.chong_nuoc}</td></tr>}
+              {parsed.kich_thuoc && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Kích thước</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.kich_thuoc}</td></tr>}
+              {parsed.loai_pin && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Loại pin</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.loai_pin}</td></tr>}
+            </tbody>
+          </table>
+        );
+      } else if (catName === 'Film') {
+        return (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <tbody>
+              {parsed.kho_film && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600, width: '40%' }}>Khổ film</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.kho_film}</td></tr>}
+              {parsed.so_kieu && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Số kiểu</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.so_kieu}</td></tr>}
+              {parsed.date && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Date</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.date}</td></tr>}
+            </tbody>
+          </table>
+        );
+      }
+      return product.specifications;
+    } catch {
+      return product.specifications;
+    }
+  };
+
   return (
     <div className="container" style={{ padding: '40px 20px' }}>
       {/* Breadcrumbs & Back Button */}
@@ -282,7 +320,7 @@ export default function ProductDetailPage() {
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
           {/* Title */}
           <h1 style={{
-            fontSize: '2.2rem',
+            fontSize: '1.8rem',
             fontWeight: 700,
             lineHeight: 1.25,
             marginBottom: '15px',
@@ -324,7 +362,7 @@ export default function ProductDetailPage() {
               overflowY: 'auto',
               lineHeight: '1.6'
             }}>
-              {product.specifications || 'Chưa có thông số kỹ thuật chi tiết.'}
+              {renderSpecifications()}
             </div>
           </div>
 
@@ -341,7 +379,7 @@ export default function ProductDetailPage() {
           }}>
             <div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Giá bán:</div>
-              <span style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 {formatVND(product.price)}
               </span>
             </div>
@@ -363,14 +401,14 @@ export default function ProductDetailPage() {
               onClick={handleAddToCart}
               disabled={product.quantity <= 0}
               className="btn btn-primary"
-              style={{ flexGrow: 2, padding: '15px', fontSize: '1rem' }}
+              style={{ flexGrow: 2, padding: '15px', fontSize: '0.9rem' }}
             >
               <ShoppingCart size={20} /> Thêm vào giỏ hàng
             </button>
             <button
               onClick={handleAddToCompare}
               className="btn btn-secondary"
-              style={{ flexGrow: 1, padding: '15px', fontSize: '1rem' }}
+              style={{ flexGrow: 1, padding: '15px', fontSize: '0.9rem' }}
             >
               <ArrowLeftRight size={20} /> So sánh sản phẩm
             </button>

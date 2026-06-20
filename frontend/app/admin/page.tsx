@@ -118,6 +118,29 @@ export default function AdminDashboardPage() {
     is_active: true
   });
   
+  const [cameraSpecs, setCameraSpecs] = useState({
+    tieu_cu: '',
+    khau_do: '',
+    chat_luong_anh: '',
+    af: '',
+    chong_nuoc: '',
+    kich_thuoc: '',
+    loai_pin: ''
+  });
+
+  const [filmSpecs, setFilmSpecs] = useState({
+    kho_film: '',
+    so_kieu: '',
+    date: ''
+  });
+
+  const parseJSON = (str: string) => {
+    try {
+      return JSON.parse(str);
+    } catch {
+      return null;
+    }
+  };
   const [bannerForm, setBannerForm] = useState({
     display_order: 0,
     file: null as File | null
@@ -290,6 +313,10 @@ export default function AdminDashboardPage() {
       quantity: 0,
       is_active: true
     });
+    setCameraSpecs({
+      tieu_cu: '', khau_do: '', chat_luong_anh: '', af: '', chong_nuoc: '', kich_thuoc: '', loai_pin: ''
+    });
+    setFilmSpecs({ kho_film: '', so_kieu: '', date: '' });
     setProductModalOpen(true);
   };
 
@@ -303,14 +330,39 @@ export default function AdminDashboardPage() {
       quantity: product.quantity,
       is_active: product.is_active
     });
+
+    const catName = categories.find(c => c.id === product.category_id)?.name;
+    const parsed = parseJSON(product.specifications);
+    
+    // Reset first
+    setCameraSpecs({
+      tieu_cu: '', khau_do: '', chat_luong_anh: '', af: '', chong_nuoc: '', kich_thuoc: '', loai_pin: ''
+    });
+    setFilmSpecs({ kho_film: '', so_kieu: '', date: '' });
+    
+    if (parsed) {
+      if (catName === 'Máy ảnh') setCameraSpecs({ ...cameraSpecs, ...parsed });
+      if (catName === 'Film') setFilmSpecs({ ...filmSpecs, ...parsed });
+    }
+
     setProductModalOpen(true);
   };
 
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let finalSpecs = productForm.specifications;
+      const catName = categories.find(c => c.id === productForm.category_id)?.name;
+      
+      if (catName === 'Máy ảnh') {
+        finalSpecs = JSON.stringify(cameraSpecs);
+      } else if (catName === 'Film') {
+        finalSpecs = JSON.stringify(filmSpecs);
+      }
+
       const payload = {
         ...productForm,
+        specifications: finalSpecs,
         price: Number(productForm.price),
         quantity: Number(productForm.quantity)
       };
@@ -438,7 +490,7 @@ export default function AdminDashboardPage() {
       {/* Sidebar Navigation */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <div style={{ padding: '15px', backgroundColor: 'var(--bg-dark)', color: '#fff', borderRadius: '6px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>BANMAYFILM</h2>
+          <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>BANMAYFILM</h2>
           <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>Quản trị hệ thống</span>
         </div>
 
@@ -540,7 +592,7 @@ export default function AdminDashboardPage() {
             {activeTab === 'products' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <h2 style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Danh sách sản phẩm</h2>
+                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Danh sách sản phẩm</h2>
                   <button onClick={openAddProduct} className="btn btn-accent" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
                     <Plus size={16} /> Thêm sản phẩm
                   </button>
@@ -632,7 +684,7 @@ export default function AdminDashboardPage() {
             {activeTab === 'banners' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <h2 style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Quản lý Banners</h2>
+                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Quản lý Banners</h2>
                   <button onClick={() => setBannerModalOpen(true)} className="btn btn-accent" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
                     <Plus size={16} /> Thêm Banner
                   </button>
@@ -664,7 +716,7 @@ export default function AdminDashboardPage() {
             {/* 3. Orders history management tab */}
             {activeTab === 'orders' && (
               <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
                   Lịch sử đơn hàng
                 </h2>
 
@@ -731,7 +783,7 @@ export default function AdminDashboardPage() {
             {activeTab === 'reports' && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  <h2 style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Báo cáo doanh thu</h2>
+                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>Báo cáo doanh thu</h2>
                   
                   {/* Select Year */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -755,7 +807,7 @@ export default function AdminDashboardPage() {
                     <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--bg-secondary)', marginBottom: '30px' }}>
                       <div>
                         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 600 }}>Tổng doanh thu năm {reportYear}</span>
-                        <h3 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '5px' }}>
+                        <h3 style={{ fontSize: '1.7rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '5px' }}>
                           {formatVND(reportData.totalYearRevenue)}
                         </h3>
                       </div>
@@ -926,7 +978,7 @@ export default function AdminDashboardPage() {
         <div className="modal-overlay">
           <div className="modal-content" style={{ padding: '24px', maxWidth: '600px' }}>
             <button onClick={() => setProductModalOpen(false)} className="close-btn"><X size={18} /></button>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
               {selectedProduct ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}
             </h3>
 
@@ -979,14 +1031,62 @@ export default function AdminDashboardPage() {
 
               <div className="form-group">
                 <label className="form-label">Thông số kỹ thuật / Mô tả *</label>
-                <textarea
-                  className="form-control"
-                  rows={4}
-                  required
-                  value={productForm.specifications}
-                  onChange={(e) => setProductForm({ ...productForm, specifications: e.target.value })}
-                  placeholder="Hãng sản xuất, độ phân giải lens, khẩu độ, loại pin..."
-                />
+                {categories.find(c => c.id === productForm.category_id)?.name === 'Máy ảnh' ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Tiêu cự</label>
+                      <input className="form-control" value={cameraSpecs.tieu_cu} onChange={e => setCameraSpecs({...cameraSpecs, tieu_cu: e.target.value})} placeholder="VD: 50mm" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Khẩu độ</label>
+                      <input className="form-control" value={cameraSpecs.khau_do} onChange={e => setCameraSpecs({...cameraSpecs, khau_do: e.target.value})} placeholder="VD: f/1.8" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Chất lượng ảnh</label>
+                      <input className="form-control" value={cameraSpecs.chat_luong_anh} onChange={e => setCameraSpecs({...cameraSpecs, chat_luong_anh: e.target.value})} placeholder="VD: 35mm Full Frame" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>AF (Auto Focus)</label>
+                      <input className="form-control" value={cameraSpecs.af} onChange={e => setCameraSpecs({...cameraSpecs, af: e.target.value})} placeholder="Có / Không" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Chống nước</label>
+                      <input className="form-control" value={cameraSpecs.chong_nuoc} onChange={e => setCameraSpecs({...cameraSpecs, chong_nuoc: e.target.value})} placeholder="Có / Không" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Kích thước</label>
+                      <input className="form-control" value={cameraSpecs.kich_thuoc} onChange={e => setCameraSpecs({...cameraSpecs, kich_thuoc: e.target.value})} placeholder="VD: 130x90x60mm" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Loại pin</label>
+                      <input className="form-control" value={cameraSpecs.loai_pin} onChange={e => setCameraSpecs({...cameraSpecs, loai_pin: e.target.value})} placeholder="VD: CR123A" />
+                    </div>
+                  </div>
+                ) : categories.find(c => c.id === productForm.category_id)?.name === 'Film' ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Khổ film</label>
+                      <input className="form-control" value={filmSpecs.kho_film} onChange={e => setFilmSpecs({...filmSpecs, kho_film: e.target.value})} placeholder="VD: 35mm" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Số kiểu</label>
+                      <input className="form-control" value={filmSpecs.so_kieu} onChange={e => setFilmSpecs({...filmSpecs, so_kieu: e.target.value})} placeholder="VD: 36" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Date</label>
+                      <input className="form-control" value={filmSpecs.date} onChange={e => setFilmSpecs({...filmSpecs, date: e.target.value})} placeholder="VD: 12/2026" />
+                    </div>
+                  </div>
+                ) : (
+                  <textarea
+                    className="form-control"
+                    rows={4}
+                    required
+                    value={productForm.specifications}
+                    onChange={(e) => setProductForm({ ...productForm, specifications: e.target.value })}
+                    placeholder="Nhập mô tả sản phẩm (dành cho Pin hoặc sản phẩm khác)..."
+                  />
+                )}
               </div>
 
               <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1012,7 +1112,7 @@ export default function AdminDashboardPage() {
         <div className="modal-overlay">
           <div className="modal-content" style={{ padding: '24px', maxWidth: '500px' }}>
             <button onClick={() => setBannerModalOpen(false)} className="close-btn"><X size={18} /></button>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
               Thêm banner mới
             </h3>
 
@@ -1055,7 +1155,7 @@ export default function AdminDashboardPage() {
               setSelectedProductForMedia(null);
             }} className="close-btn"><X size={18} /></button>
             
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '10px', fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '10px', fontFamily: 'var(--font-heading)' }}>
               Quản lý hình ảnh/video sản phẩm
             </h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
@@ -1127,7 +1227,7 @@ export default function AdminDashboardPage() {
           <div className="modal-content" style={{ padding: '24px', maxWidth: '750px' }}>
             <button onClick={() => setOrderModalOpen(false)} className="close-btn"><X size={18} /></button>
             
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
               Chi tiết và Cập nhật đơn hàng
             </h3>
 

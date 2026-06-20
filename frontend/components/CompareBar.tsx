@@ -41,7 +41,7 @@ export const CompareBar: React.FC = () => {
         }}>
           {/* Left section: Product list */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               So sánh ({compareList.length}/3):
             </span>
             
@@ -67,7 +67,7 @@ export const CompareBar: React.FC = () => {
                     style={{ width: '32px', height: '32px', objectFit: 'cover', borderRadius: '2px' }}
                   />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 600, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {product.name}
                     </span>
                     <span style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>
@@ -104,7 +104,7 @@ export const CompareBar: React.FC = () => {
               className="btn btn-accent"
               style={{
                 padding: '8px 16px',
-                fontSize: '0.85rem',
+                fontSize: '0.75rem',
                 opacity: compareList.length < 2 ? 0.6 : 1,
                 cursor: compareList.length < 2 ? 'not-allowed' : 'pointer'
               }}
@@ -117,7 +117,7 @@ export const CompareBar: React.FC = () => {
               className="btn btn-secondary"
               style={{
                 padding: '8px 12px',
-                fontSize: '0.85rem',
+                fontSize: '0.75rem',
                 backgroundColor: 'transparent',
                 borderColor: 'rgba(255,255,255,0.2)',
                 color: 'var(--bg-primary)'
@@ -149,7 +149,7 @@ export const CompareBar: React.FC = () => {
             transition: 'var(--transition-fast)',
             fontFamily: 'var(--font-body)',
             fontWeight: 600,
-            fontSize: '0.85rem'
+            fontSize: '0.75rem'
           }}
           onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
           onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}

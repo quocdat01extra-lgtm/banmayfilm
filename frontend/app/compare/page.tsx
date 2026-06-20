@@ -13,11 +13,47 @@ export default function ComparePage() {
     clearCompare,
   } = useCompare();
 
+  const specLabels: Record<string, string> = {
+    tieu_cu: 'Tiêu cự',
+    khau_do: 'Khẩu độ',
+    chat_luong_anh: 'Chất lượng ảnh',
+    af: 'AF',
+    chong_nuoc: 'Chống nước',
+    kich_thuoc: 'Kích thước',
+    loai_pin: 'Loại pin',
+    kho_film: 'Khổ film',
+    so_kieu: 'Số kiểu',
+    date: 'Date'
+  };
+
+  const parseSpecs = (specs: string) => {
+    if (!specs) return null;
+    try {
+      return JSON.parse(specs);
+    } catch {
+      return null;
+    }
+  };
+
+  const allSpecs = compareList.map(p => parseSpecs(p.specifications));
+  
+  const uniqueKeys = new Set<string>();
+  allSpecs.forEach(specs => {
+    if (specs && typeof specs === 'object') {
+      Object.keys(specs).forEach(key => {
+        if (specs[key] && specs[key].trim() !== '') uniqueKeys.add(key);
+      });
+    }
+  });
+
+  const orderedKeys = Object.keys(specLabels).filter(key => uniqueKeys.has(key));
+  const hasRawSpecs = allSpecs.some(specs => specs === null);
+
   if (compareList.length === 0) {
     return (
       <div className="container" style={{ padding: '80px 20px', textAlign: 'center' }}>
         <ArrowLeftRight size={48} style={{ color: 'var(--text-secondary)', marginBottom: '20px' }} />
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', marginBottom: '15px' }}>Chưa có sản phẩm để so sánh</h2>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', marginBottom: '15px' }}>Chưa có sản phẩm để so sánh</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '30px', fontSize: '1rem' }}>
           Hãy thêm ít nhất 2 sản phẩm vào danh sách so sánh từ trang chủ.
         </p>
@@ -53,7 +89,7 @@ export default function ComparePage() {
 
       {/* Page Title */}
       <h1 style={{
-        fontSize: '2rem',
+        fontSize: '1.7rem',
         fontWeight: 700,
         fontFamily: 'var(--font-heading)',
         marginBottom: '25px',
@@ -209,37 +245,73 @@ export default function ComparePage() {
               ))}
             </tr>
 
-            {/* Row 3: Thông số kỹ thuật */}
-            <tr>
-              <td style={{
-                padding: '14px',
-                fontWeight: 700,
-                backgroundColor: 'var(--bg-primary)',
-                borderRight: '1px solid var(--border-color)',
-                verticalAlign: 'top',
-                fontSize: '0.9rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                color: 'var(--text-secondary)'
-              }}>
-                Thông số kỹ thuật
-              </td>
-              {compareList.map((product) => (
-                <td 
-                  key={product.id} 
-                  style={{
-                    padding: '14px',
-                    verticalAlign: 'top',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.6',
-                    whiteSpace: 'pre-wrap',
-                    borderRight: '1px solid var(--border-color)'
-                  }}
-                >
-                  {product.specifications || 'Chưa có thông số kỹ thuật chi tiết.'}
+            {/* Structured Specifications Rows */}
+            {orderedKeys.map(key => (
+              <tr key={key} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                <td style={{
+                  padding: '14px',
+                  fontWeight: 700,
+                  backgroundColor: 'var(--bg-primary)',
+                  borderRight: '1px solid var(--border-color)',
+                  fontSize: '0.9rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: 'var(--text-secondary)'
+                }}>
+                  {specLabels[key]}
                 </td>
-              ))}
-            </tr>
+                {compareList.map((product, idx) => {
+                  const specs = allSpecs[idx];
+                  const value = specs && specs[key] ? specs[key] : '—';
+                  return (
+                    <td key={product.id} style={{
+                      padding: '14px',
+                      textAlign: 'center',
+                      borderRight: '1px solid var(--border-color)',
+                      fontSize: '0.9rem'
+                    }}>
+                      {value}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+
+            {/* Row 3: Thông số khác (Raw text) */}
+            {hasRawSpecs && (
+              <tr>
+                <td style={{
+                  padding: '14px',
+                  fontWeight: 700,
+                  backgroundColor: 'var(--bg-primary)',
+                  borderRight: '1px solid var(--border-color)',
+                  verticalAlign: 'top',
+                  fontSize: '0.9rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  color: 'var(--text-secondary)'
+                }}>
+                  Thông số khác
+                </td>
+                {compareList.map((product, idx) => {
+                  const specs = allSpecs[idx];
+                  // If it's a parsed JSON, it's already shown in structured rows
+                  const value = specs === null ? (product.specifications || 'Chưa có thông số') : '—';
+                  return (
+                    <td key={product.id} style={{
+                      padding: '14px',
+                      verticalAlign: 'top',
+                      fontSize: '0.9rem',
+                      lineHeight: '1.6',
+                      whiteSpace: 'pre-wrap',
+                      borderRight: '1px solid var(--border-color)'
+                    }}>
+                      {value}
+                    </td>
+                  );
+                })}
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

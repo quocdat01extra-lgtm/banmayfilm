@@ -13,6 +13,42 @@ export const CompareModal: React.FC = () => {
     setCompareModalOpen,
   } = useCompare();
 
+  const specLabels: Record<string, string> = {
+    tieu_cu: 'Tiêu cự',
+    khau_do: 'Khẩu độ',
+    chat_luong_anh: 'Chất lượng ảnh',
+    af: 'AF',
+    chong_nuoc: 'Chống nước',
+    kich_thuoc: 'Kích thước',
+    loai_pin: 'Loại pin',
+    kho_film: 'Khổ film',
+    so_kieu: 'Số kiểu',
+    date: 'Date'
+  };
+
+  const parseSpecs = (specs: string) => {
+    if (!specs) return null;
+    try {
+      return JSON.parse(specs);
+    } catch {
+      return null;
+    }
+  };
+
+  const allSpecs = compareList.map(p => parseSpecs(p.specifications));
+  
+  const uniqueKeys = new Set<string>();
+  allSpecs.forEach(specs => {
+    if (specs && typeof specs === 'object') {
+      Object.keys(specs).forEach(key => {
+        if (specs[key] && specs[key].trim() !== '') uniqueKeys.add(key);
+      });
+    }
+  });
+
+  const orderedKeys = Object.keys(specLabels).filter(key => uniqueKeys.has(key));
+  const hasRawSpecs = allSpecs.some(specs => specs === null);
+
   if (!isCompareModalOpen || compareList.length === 0) return null;
 
   return (
@@ -36,7 +72,7 @@ export const CompareModal: React.FC = () => {
         </button>
 
         <h2 style={{
-          fontSize: '1.5rem',
+          fontSize: '1.3rem',
           fontWeight: 700,
           marginBottom: '20px',
           fontFamily: 'var(--font-heading)',
@@ -84,7 +120,7 @@ export const CompareModal: React.FC = () => {
                         alt={product.name}
                         style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }}
                       />
-                      <span style={{ fontSize: '0.95rem', display: 'block', minHeight: '40px', lineHeight: 1.3 }}>
+                      <span style={{ fontSize: '0.85rem', display: 'block', minHeight: '40px', lineHeight: 1.3 }}>
                         {product.name}
                       </span>
                       <button
@@ -118,7 +154,7 @@ export const CompareModal: React.FC = () => {
                       textAlign: 'center',
                       fontWeight: 700,
                       color: 'var(--accent)',
-                      fontSize: '1.1rem',
+                      fontSize: '1rem',
                       borderRight: '1px solid var(--border-color)'
                     }}
                   >
@@ -151,33 +187,72 @@ export const CompareModal: React.FC = () => {
                 ))}
               </tr>
 
-              {/* Row 3: Thông số kỹ thuật */}
-              <tr>
-                <td style={{
-                  padding: '12px',
-                  fontWeight: 700,
-                  backgroundColor: 'var(--bg-secondary)',
-                  borderRight: '1px solid var(--border-color)',
-                  verticalAlign: 'top'
-                }}>
-                  Thông số kỹ thuật
-                </td>
-                {compareList.map((product) => (
-                  <td 
-                    key={product.id} 
-                    style={{
-                      padding: '12px',
+                {/* Structured Specifications Rows */}
+                {orderedKeys.map(key => (
+                  <tr key={key} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <td style={{
+                      padding: '12px 16px',
+                      fontWeight: 700,
+                      backgroundColor: 'var(--bg-primary)',
+                      borderRight: '1px solid var(--border-color)',
+                      fontSize: '0.85rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      color: 'var(--text-secondary)'
+                    }}>
+                      {specLabels[key]}
+                    </td>
+                    {compareList.map((product, idx) => {
+                      const specs = allSpecs[idx];
+                      const value = specs && specs[key] ? specs[key] : '—';
+                      return (
+                        <td key={product.id} style={{
+                          padding: '12px 16px',
+                          textAlign: 'center',
+                          borderRight: '1px solid var(--border-color)',
+                          fontSize: '0.9rem'
+                        }}>
+                          {value}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+
+                {/* Row 3: Thông số khác (Raw text) */}
+                {hasRawSpecs && (
+                  <tr>
+                    <td style={{
+                      padding: '12px 16px',
+                      fontWeight: 700,
+                      backgroundColor: 'var(--bg-primary)',
+                      borderRight: '1px solid var(--border-color)',
                       verticalAlign: 'top',
                       fontSize: '0.85rem',
-                      lineHeight: '1.5',
-                      whiteSpace: 'pre-wrap',
-                      borderRight: '1px solid var(--border-color)'
-                    }}
-                  >
-                    {product.specifications || 'Chưa có thông số kỹ thuật chi tiết.'}
-                  </td>
-                ))}
-              </tr>
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      color: 'var(--text-secondary)'
+                    }}>
+                      Thông số khác
+                    </td>
+                    {compareList.map((product, idx) => {
+                      const specs = allSpecs[idx];
+                      const value = specs === null ? (product.specifications || 'Chưa có thông số') : '—';
+                      return (
+                        <td key={product.id} style={{
+                          padding: '12px 16px',
+                          verticalAlign: 'top',
+                          fontSize: '0.85rem',
+                          lineHeight: '1.5',
+                          whiteSpace: 'pre-wrap',
+                          borderRight: '1px solid var(--border-color)'
+                        }}>
+                          {value}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                )}
             </tbody>
           </table>
         </div>

@@ -144,7 +144,7 @@ export default function CartPage() {
         </Link>
       </div>
 
-      <h1 style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '30px' }}>
+      <h1 style={{ fontSize: '1.7rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '30px' }}>
         Giỏ hàng của bạn
       </h1>
 
@@ -172,7 +172,7 @@ export default function CartPage() {
           {/* Left: Customer Information Form */}
           <div>
             <form onSubmit={handleSubmit} className="card" style={{ padding: '24px', backgroundColor: 'var(--bg-secondary)' }}>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
                 Thông tin khách hàng
               </h2>
 
@@ -340,7 +340,7 @@ export default function CartPage() {
           {/* Right: Cart Item Listings */}
           <div>
             <div className="card" style={{ padding: '24px', position: 'sticky', top: '100px' }}>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
                 Tóm tắt đơn hàng
               </h2>
 
@@ -433,7 +433,7 @@ export default function CartPage() {
                 marginBottom: '20px'
               }}>
                 <span style={{ fontSize: '1rem', fontWeight: 700 }}>Tổng tiền:</span>
-                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                   {formatVND(getCartTotal())}
                 </span>
               </div>

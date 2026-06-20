@@ -53,6 +53,44 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
 
   const currentMedia = mediaList[mediaIndex];
 
+  const renderSpecifications = () => {
+    if (!product.specifications) return 'Chưa có thông số kỹ thuật chi tiết.';
+    
+    try {
+      const parsed = JSON.parse(product.specifications);
+      const catName = product.categories?.name;
+      
+      if (catName === 'Máy ảnh') {
+        return (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <tbody>
+              {parsed.tieu_cu && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600, width: '40%' }}>Tiêu cự</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.tieu_cu}</td></tr>}
+              {parsed.khau_do && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Khẩu độ</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.khau_do}</td></tr>}
+              {parsed.chat_luong_anh && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Chất lượng ảnh</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.chat_luong_anh}</td></tr>}
+              {parsed.af && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>AF</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.af}</td></tr>}
+              {parsed.chong_nuoc && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Chống nước</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.chong_nuoc}</td></tr>}
+              {parsed.kich_thuoc && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Kích thước</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.kich_thuoc}</td></tr>}
+              {parsed.loai_pin && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Loại pin</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.loai_pin}</td></tr>}
+            </tbody>
+          </table>
+        );
+      } else if (catName === 'Film') {
+        return (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <tbody>
+              {parsed.kho_film && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600, width: '40%' }}>Khổ film</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.kho_film}</td></tr>}
+              {parsed.so_kieu && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Số kiểu</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.so_kieu}</td></tr>}
+              {parsed.date && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Date</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.date}</td></tr>}
+            </tbody>
+          </table>
+        );
+      }
+      return product.specifications;
+    } catch {
+      return product.specifications;
+    }
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div 
@@ -231,7 +269,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
           }}>
             {/* Title */}
             <h2 style={{
-              fontSize: '1.75rem',
+              fontSize: '1.5rem',
               fontWeight: 700,
               lineHeight: 1.2,
               marginBottom: '15px',
@@ -271,13 +309,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                 maxHeight: '180px',
                 overflowY: 'auto'
               }}>
-                {product.specifications || 'Chưa có thông số kỹ thuật chi tiết.'}
+                {renderSpecifications()}
               </div>
             </div>
 
             {/* Price */}
             <div style={{ marginBottom: '20px' }}>
-              <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+              <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 {formatVND(product.price)}
               </span>
               <span style={{ marginLeft: '12px', fontSize: '0.85rem', color: product.quantity > 0 ? 'var(--text-secondary)' : 'var(--danger)', fontWeight: 600 }}>
