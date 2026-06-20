@@ -401,16 +401,18 @@ export default function ProductDetailPage() {
               onClick={handleAddToCart}
               disabled={product.quantity <= 0}
               className="btn btn-primary"
-              style={{ flexGrow: 2, padding: '15px', fontSize: '1.1rem' }}
+              style={{ flexGrow: 2, padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
             >
-              <ShoppingCart size={20} /> Thêm vào giỏ hàng
+              <ShoppingCart size={20} />
+              <span style={{ textAlign: 'left', lineHeight: '1.2' }}>Thêm vào<br/>giỏ hàng</span>
             </button>
             <button
               onClick={handleAddToCompare}
               className="btn btn-secondary"
-              style={{ flexGrow: 1, padding: '15px', fontSize: '1.1rem' }}
+              style={{ flexGrow: 1, padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
             >
-              <ArrowLeftRight size={20} /> So sánh sản phẩm
+              <ArrowLeftRight size={20} />
+              <span style={{ textAlign: 'left', lineHeight: '1.2' }}>So sánh<br/>sản phẩm</span>
             </button>
           </div>
         </div>
