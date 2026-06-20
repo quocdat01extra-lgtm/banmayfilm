@@ -329,14 +329,14 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                 onClick={handleAddToCart}
                 disabled={product.quantity <= 0}
                 className="btn btn-primary"
-                style={{ flexGrow: 2, padding: '12px', fontSize: '0.65rem' }}
+                style={{ flexGrow: 2, padding: '12px', fontSize: '1.05rem' }}
               >
                 <ShoppingCart size={18} /> Thêm vào giỏ hàng
               </button>
               <button
                 onClick={handleAddToCompare}
                 className="btn btn-secondary"
-                style={{ flexGrow: 1, padding: '12px', fontSize: '0.65rem' }}
+                style={{ flexGrow: 1, padding: '12px', fontSize: '1.05rem' }}
               >
                 <ArrowLeftRight size={18} /> So sánh
               </button>

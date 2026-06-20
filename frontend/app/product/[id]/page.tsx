@@ -401,14 +401,14 @@ export default function ProductDetailPage() {
               onClick={handleAddToCart}
               disabled={product.quantity <= 0}
               className="btn btn-primary"
-              style={{ flexGrow: 2, padding: '15px', fontSize: '0.7rem' }}
+              style={{ flexGrow: 2, padding: '15px', fontSize: '1.1rem' }}
             >
               <ShoppingCart size={20} /> Thêm vào giỏ hàng
             </button>
             <button
               onClick={handleAddToCompare}
               className="btn btn-secondary"
-              style={{ flexGrow: 1, padding: '15px', fontSize: '0.7rem' }}
+              style={{ flexGrow: 1, padding: '15px', fontSize: '1.1rem' }}
             >
               <ArrowLeftRight size={20} /> So sánh sản phẩm
             </button>
