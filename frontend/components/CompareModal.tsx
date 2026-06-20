@@ -15,6 +15,10 @@ export const CompareModal: React.FC = () => {
 
   if (!isCompareModalOpen || compareList.length === 0) return null;
 
+  const prices = compareList.map((p) => p.price);
+  const minPrice = Math.min(...prices);
+  const showBestPrice = compareList.length > 1;
+
   return (
     <div className="modal-overlay" onClick={() => setCompareModalOpen(false)}>
       <div 
@@ -110,21 +114,42 @@ export const CompareModal: React.FC = () => {
                 }}>
                   Giá bán
                 </td>
-                {compareList.map((product) => (
-                  <td 
-                    key={product.id} 
-                    style={{
-                      padding: '12px',
-                      textAlign: 'center',
-                      fontWeight: 700,
-                      color: 'var(--accent)',
-                      fontSize: '1.1rem',
-                      borderRight: '1px solid var(--border-color)'
-                    }}
-                  >
-                    {formatVND(product.price)}
-                  </td>
-                ))}
+                {compareList.map((product) => {
+                  const isLowest = showBestPrice && product.price === minPrice;
+                  return (
+                    <td 
+                      key={product.id} 
+                      style={{
+                        padding: '12px',
+                        textAlign: 'center',
+                        fontWeight: 700,
+                        color: isLowest ? 'var(--success)' : 'var(--accent)',
+                        fontSize: '1.1rem',
+                        borderRight: '1px solid var(--border-color)',
+                        backgroundColor: isLowest ? 'rgba(39, 174, 96, 0.05)' : 'transparent'
+                      }}
+                    >
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                        <span>{formatVND(product.price)}</span>
+                        {isLowest && (
+                          <span style={{
+                            display: 'inline-block',
+                            backgroundColor: 'var(--success)',
+                            color: 'white',
+                            fontSize: '0.7rem',
+                            padding: '2px 6px',
+                            borderRadius: '3px',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                            Giá tốt nhất
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
               </tr>
 
               {/* Row 2: Danh mục */}

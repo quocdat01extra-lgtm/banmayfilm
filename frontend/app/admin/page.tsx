@@ -147,6 +147,27 @@ export default function AdminDashboardPage() {
     totalYearRevenue: number;
   } | null>(null);
 
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
+  const [monthlyDetail, setMonthlyDetail] = useState<{
+    year: number;
+    month: number;
+    products: { product_id: string; name: string; revenue: number; quantity: number }[];
+  } | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  const fetchMonthlyDetail = async (month: number) => {
+    try {
+      setLoadingDetail(true);
+      setSelectedMonth(month);
+      const data = await fetchAPI(`/api/reports/revenue/monthly?year=${reportYear}&month=${month}`);
+      setMonthlyDetail(data);
+    } catch (err) {
+      console.error('Lỗi tải chi tiết doanh thu tháng:', err);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
   // Protect route
   useEffect(() => {
     if (isInitialized && !isAdmin) {
@@ -179,6 +200,8 @@ export default function AdminDashboardPage() {
       // Load report
       const repData = await fetchAPI(`/api/reports/revenue?year=${reportYear}`);
       setReportData(repData);
+      setSelectedMonth(null);
+      setMonthlyDetail(null);
     } catch (err) {
       console.error('Lỗi tải dữ liệu admin:', err);
     } finally {
@@ -197,6 +220,8 @@ export default function AdminDashboardPage() {
     try {
       const data = await fetchAPI(`/api/reports/revenue?year=${year}`);
       setReportData(data);
+      setSelectedMonth(null);
+      setMonthlyDetail(null);
     } catch (err) {
       console.error('Lỗi tải báo cáo:', err);
     }
@@ -529,7 +554,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Main Dashboard Panel Content */}
-      <div className="card" style={{ padding: '25px', minHeight: '80vh' }}>
+      <div className="card" style={{ padding: '25px', minHeight: '80vh', minWidth: 0 }}>
         
         {loading && (
           <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-secondary)' }}>
@@ -768,7 +793,7 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {/* CSS Custom Bar Chart (Visual Excellence and Vintage Ledger Style) */}
-                    <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '15px', color: 'var(--text-secondary)' }}>Biểu đồ doanh thu hàng tháng</h4>
+                    <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '15px', color: 'var(--text-secondary)' }}>Biểu đồ doanh thu hàng tháng (Click chọn tháng để xem chi tiết)</h4>
                     <div style={{
                       backgroundColor: 'var(--bg-primary)',
                       border: '1px solid var(--border-color)',
@@ -785,16 +810,23 @@ export default function AdminDashboardPage() {
                         // Compute height as percentage of max revenue
                         const maxRev = Math.max(...reportData.monthlyRevenue.map(mr => mr.revenue)) || 1;
                         const pctHeight = (m.revenue / maxRev) * 200; // Cap visual height
+                        const isSelected = selectedMonth === m.month;
                         
                         return (
                           <div 
                             key={m.month} 
+                            onClick={() => fetchMonthlyDetail(m.month)}
                             style={{ 
                               display: 'flex', 
                               flexDirection: 'column', 
                               alignItems: 'center', 
                               flexGrow: 1, 
-                              position: 'relative'
+                              position: 'relative',
+                              cursor: 'pointer',
+                              padding: '10px 0',
+                              borderRadius: '4px',
+                              backgroundColor: isSelected ? 'rgba(184, 134, 11, 0.08)' : 'transparent',
+                              transition: 'background-color 0.2s'
                             }}
                           >
                             {/* Hover info tooltip */}
@@ -809,7 +841,8 @@ export default function AdminDashboardPage() {
                               whiteSpace: 'nowrap',
                               zIndex: 10,
                               boxShadow: 'var(--shadow-sm)',
-                              opacity: m.revenue > 0 ? 0.9 : 0
+                              opacity: m.revenue > 0 ? (isSelected ? 1 : 0.8) : 0,
+                              fontWeight: isSelected ? 700 : 500
                             }}>
                               {formatVND(m.revenue)}
                             </div>
@@ -818,14 +851,23 @@ export default function AdminDashboardPage() {
                             <div style={{
                               width: '24px',
                               height: `${pctHeight}px`,
-                              backgroundColor: m.revenue > 0 ? 'var(--accent)' : 'var(--bg-secondary)',
-                              border: '1px solid var(--border-color)',
+                              backgroundColor: isSelected ? 'var(--accent-hover)' : (m.revenue > 0 ? 'var(--accent)' : 'var(--bg-secondary)'),
+                              border: isSelected ? '2px solid var(--bg-dark)' : '1px solid var(--border-color)',
                               borderRadius: '2px 2px 0 0',
-                              transition: 'height 0.5s ease-in-out'
+                              transition: 'height 0.5s ease-in-out, background-color 0.2s',
+                              boxShadow: isSelected ? '0 0 8px rgba(184, 134, 11, 0.3)' : 'none'
                             }} />
 
                             {/* Month Label */}
-                            <span style={{ fontSize: '0.8rem', fontWeight: 600, marginTop: '8px' }}>T{m.month}</span>
+                            <span style={{ 
+                              fontSize: '0.8rem', 
+                              fontWeight: 600, 
+                              marginTop: '8px',
+                              color: isSelected ? 'var(--accent)' : 'var(--text-primary)',
+                              textDecoration: isSelected ? 'underline' : 'none'
+                            }}>
+                              T{m.month}
+                            </span>
                           </div>
                         );
                       })}
@@ -842,16 +884,97 @@ export default function AdminDashboardPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {reportData.monthlyRevenue.map((m) => (
-                            <tr key={m.month} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                              <td style={{ padding: '10px', fontWeight: 600 }}>Tháng {m.month}</td>
-                              <td style={{ padding: '10px' }}>{m.orderCount} đơn hàng</td>
-                              <td style={{ padding: '10px', fontWeight: 600, textAlign: 'right' }}>{formatVND(m.revenue)}</td>
-                            </tr>
-                          ))}
+                          {reportData.monthlyRevenue.map((m) => {
+                            const isSelected = selectedMonth === m.month;
+                            return (
+                              <tr 
+                                key={m.month} 
+                                onClick={() => fetchMonthlyDetail(m.month)}
+                                style={{ 
+                                  borderBottom: '1px solid var(--border-color)',
+                                  cursor: 'pointer',
+                                  backgroundColor: isSelected ? 'rgba(184, 134, 11, 0.08)' : 'transparent',
+                                  transition: 'background-color 0.2s'
+                                }}
+                              >
+                                <td style={{ padding: '10px', fontWeight: 600, color: isSelected ? 'var(--accent)' : 'inherit' }}>
+                                  Tháng {m.month} {isSelected && '✓'}
+                                </td>
+                                <td style={{ padding: '10px' }}>{m.orderCount} đơn hàng</td>
+                                <td style={{ padding: '10px', fontWeight: 600, textAlign: 'right', color: isSelected ? 'var(--accent)' : 'inherit' }}>
+                                  {formatVND(m.revenue)}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
+
+                    {/* Monthly product details drill-down */}
+                    {(selectedMonth !== null || loadingDetail || monthlyDetail) && (
+                      <div style={{ marginTop: '45px', borderTop: '1px solid var(--border-color)', paddingTop: '25px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, fontFamily: 'var(--font-heading)', color: 'var(--text-primary)' }}>
+                            Chi tiết doanh thu theo sản phẩm - Tháng {selectedMonth} / {reportYear}
+                          </h3>
+                          <button 
+                            onClick={() => {
+                              setSelectedMonth(null);
+                              setMonthlyDetail(null);
+                            }}
+                            className="btn btn-secondary"
+                            style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+                          >
+                            Đóng chi tiết
+                          </button>
+                        </div>
+
+                        {loadingDetail && (
+                          <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--text-secondary)' }}>
+                            Đang tải chi tiết doanh thu sản phẩm...
+                          </div>
+                        )}
+
+                        {!loadingDetail && monthlyDetail && (
+                          <div>
+                            {monthlyDetail.products.length === 0 ? (
+                              <div style={{ padding: '20px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '4px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                Không có sản phẩm nào phát sinh doanh thu trong tháng này.
+                              </div>
+                            ) : (
+                              <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
+                                  <thead>
+                                    <tr style={{ borderBottom: '2px solid var(--bg-dark)', backgroundColor: 'var(--bg-secondary)' }}>
+                                      <th style={{ padding: '10px', fontWeight: 700 }}>Tên sản phẩm</th>
+                                      <th style={{ padding: '10px', fontWeight: 700, textAlign: 'center' }}>Số lượng đã bán</th>
+                                      <th style={{ padding: '10px', fontWeight: 700, textAlign: 'right' }}>Doanh thu</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {monthlyDetail.products.map((item, idx) => (
+                                      <tr key={item.product_id || idx} style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: idx === 0 ? 'rgba(184, 134, 11, 0.04)' : 'transparent' }}>
+                                        <td style={{ padding: '10px', fontWeight: idx === 0 ? 600 : 500 }}>
+                                          {item.name}
+                                          {idx === 0 && (
+                                            <span style={{ marginLeft: '8px', display: 'inline-block', backgroundColor: 'var(--accent)', color: 'white', fontSize: '0.65rem', padding: '2px 6px', borderRadius: '3px', fontWeight: 600 }}>BÁN CHẠY NHẤT</span>
+                                          )}
+                                        </td>
+                                        <td style={{ padding: '10px', textAlign: 'center' }}>{item.quantity}</td>
+                                        <td style={{ padding: '10px', fontWeight: 600, textAlign: 'right', color: idx === 0 ? 'var(--accent)' : 'inherit' }}>
+                                          {formatVND(item.revenue)}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                   </div>
                 )}

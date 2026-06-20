@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAPI } from '@/lib/api';
 import { ProductCard, Product } from './ProductCard';
-import { ProductModal } from './ProductModal';
 import { Grid, Eye } from 'lucide-react';
 
 interface Category {
@@ -16,7 +15,6 @@ export const ProductGrid: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch categories & products on load
@@ -167,27 +165,18 @@ export const ProductGrid: React.FC = () => {
         ) : (
           <div className="product-grid" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+            gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '20px'
           }}>
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
-                onClick={() => setSelectedProduct(product)}
               />
             ))}
           </div>
         )}
       </div>
-
-      {/* Product Detail Modal */}
-      {selectedProduct && (
-        <ProductModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
-      )}
 
       {/* Responsive layout styles global overrides */}
       <style jsx global>{`

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 export interface ProductMediaItem {
   id: string;
@@ -26,7 +27,7 @@ export interface Product {
 
 interface ProductCardProps {
   product: Product;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 export const formatVND = (price: number) => {
@@ -46,7 +47,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
   const displayImage = firstImage || fallbackImage;
 
   return (
-    <div 
+    <Link 
+      href={`/product/${product.id}`}
       className="card" 
       onClick={onClick}
       style={{
@@ -55,7 +57,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
         flexDirection: 'column',
         height: '100%',
         padding: '12px',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        color: 'inherit',
+        textDecoration: 'none'
       }}
     >
       {/* Product Image Wrapper */}
@@ -132,7 +136,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 export default ProductCard;
