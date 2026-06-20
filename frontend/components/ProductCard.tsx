@@ -104,7 +104,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
         </span>
         
         <h3 style={{ 
-          fontSize: '0.7rem', 
+          fontSize: '0.9rem', 
           lineHeight: '1.4', 
           fontWeight: 600,
           color: 'var(--text-primary)',

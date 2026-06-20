@@ -61,7 +61,7 @@ export const ProductGrid: React.FC = () => {
       {/* Category Navigation - Sidebar on Desktop, Horizontal Tabs inline for Mobile */}
       <div className="category-navigation">
         <h3 style={{
-          fontSize: '0.85rem',
+          fontSize: '1.1rem',
           fontWeight: 700,
           marginBottom: '15px',
           color: 'var(--text-primary)',

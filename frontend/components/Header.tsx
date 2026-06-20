@@ -48,15 +48,15 @@ export const Header: React.FC = () => {
             <>
               {isAdmin ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Link href="/admin" className="btn btn-accent" style={{ padding: '6px 12px', fontSize: '0.55rem' }}>
+                  <Link href="/admin" className="btn btn-accent" style={{ padding: '6px 12px', fontSize: '0.6rem' }}>
                     <ShieldAlert size={14} /> Admin
                   </Link>
-                  <button onClick={logout} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.55rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <button onClick={logout} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.6rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <LogOut size={14} />
                   </button>
                 </div>
               ) : (
-                <Link href="/admin/login" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.55rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Link href="/admin/login" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.6rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <User size={14} /> Đăng nhập
                 </Link>
               )}

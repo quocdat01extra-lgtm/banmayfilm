@@ -269,7 +269,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
           }}>
             {/* Title */}
             <h2 style={{
-              fontSize: '1.3rem',
+              fontSize: '1.5rem',
               fontWeight: 700,
               lineHeight: 1.2,
               marginBottom: '15px',
@@ -319,7 +319,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                 {formatVND(product.price)}
               </span>
               <span style={{ marginLeft: '12px', fontSize: '0.85rem', color: product.quantity > 0 ? 'var(--text-secondary)' : 'var(--danger)', fontWeight: 600 }}>
-                {product.quantity > 0 ? `Còn lại: ${product.quantity} sản phẩm` : 'Hết hàng'}
+                {product.quantity > 0 ? `Còn lại: ${product.quantity}` : 'Hết hàng'}
               </span>
             </div>
 
@@ -329,14 +329,14 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
                 onClick={handleAddToCart}
                 disabled={product.quantity <= 0}
                 className="btn btn-primary"
-                style={{ flexGrow: 2, padding: '12px' }}
+                style={{ flexGrow: 2, padding: '12px', fontSize: '0.75rem' }}
               >
                 <ShoppingCart size={18} /> Thêm vào giỏ hàng
               </button>
               <button
                 onClick={handleAddToCompare}
                 className="btn btn-secondary"
-                style={{ flexGrow: 1, padding: '12px' }}
+                style={{ flexGrow: 1, padding: '12px', fontSize: '0.75rem' }}
               >
                 <ArrowLeftRight size={18} /> So sánh
               </button>
