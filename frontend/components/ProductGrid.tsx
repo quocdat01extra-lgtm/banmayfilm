@@ -91,7 +91,7 @@ export const ProductGrid: React.FC = () => {
               style={{
                 width: '100%',
                 textAlign: 'left',
-                padding: '10px 12px',
+                padding: '8px 10px',
                 border: 'none',
                 borderRadius: '4px',
                 backgroundColor: selectedCategory === null && !isPreorderView ? 'var(--bg-dark)' : 'transparent',
@@ -120,7 +120,7 @@ export const ProductGrid: React.FC = () => {
                 style={{
                   width: '100%',
                   textAlign: 'left',
-                  padding: '10px 12px',
+                  padding: '8px 10px',
                   border: 'none',
                   borderRadius: '4px',
                   backgroundColor: selectedCategory === cat.id ? 'var(--bg-dark)' : 'transparent',
@@ -149,7 +149,7 @@ export const ProductGrid: React.FC = () => {
               style={{
                 width: '100%',
                 textAlign: 'left',
-                padding: '10px 12px',
+                padding: '8px 10px',
                 border: '2px solid var(--accent)',
                 borderRadius: '4px',
                 backgroundColor: isPreorderView ? 'rgba(184, 134, 11, 0.15)' : 'transparent',
@@ -165,7 +165,7 @@ export const ProductGrid: React.FC = () => {
                 if (!isPreorderView) e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              Hàng Pre-order
+              Pre-order
             </button>
           </li>
         </ul>
@@ -176,7 +176,7 @@ export const ProductGrid: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
             {isPreorderView
-              ? 'Hàng Pre-order'
+              ? 'Pre-order'
               : selectedCategory 
                 ? categories.find(c => c.id === selectedCategory)?.name 
                 : 'Tất cả'
@@ -236,7 +236,7 @@ export const ProductGrid: React.FC = () => {
           }
           .desktop-categories button {
             text-align: center !important;
-            padding: 8px 16px !important;
+            padding: 6px 12px !important;
             white-space: nowrap !important;
             border: 1px solid var(--border-color) !important;
           }
