@@ -15,10 +15,21 @@ export class ReportService {
 
     if (error) throw error;
 
+    // Fetch all non-cancelled preorders for this year
+    const { data: preorders, error: preorderError } = await supabase
+      .from('preorders')
+      .select('total_price, created_at')
+      .neq('status', 'CANCELLED')
+      .gte('created_at', startDate)
+      .lte('created_at', endDate);
+
+    if (preorderError) throw preorderError;
+
     // Initialize 12 months array with 0 revenue
     const monthlyRevenue = Array.from({ length: 12 }, (_, i) => ({
       month: i + 1,
       revenue: 0,
+      preorderRevenue: 0,
       orderCount: 0
     }));
 
@@ -27,6 +38,18 @@ export class ReportService {
         const orderDate = new Date(order.created_at);
         const monthIndex = orderDate.getUTCMonth(); // 0 - 11
         if (monthIndex >= 0 && monthIndex < 12) {
+          monthlyRevenue[monthIndex].revenue += Number(order.total_price);
+          monthlyRevenue[monthIndex].orderCount += 1;
+        }
+      }
+    }
+
+    if (preorders) {
+      for (const order of preorders) {
+        const orderDate = new Date(order.created_at);
+        const monthIndex = orderDate.getUTCMonth(); // 0 - 11
+        if (monthIndex >= 0 && monthIndex < 12) {
+          monthlyRevenue[monthIndex].preorderRevenue += Number(order.total_price);
           monthlyRevenue[monthIndex].revenue += Number(order.total_price);
           monthlyRevenue[monthIndex].orderCount += 1;
         }
@@ -55,7 +78,26 @@ export class ReportService {
 
     if (error) throw error;
 
+    const { data: preorders, error: preorderError } = await supabase
+      .from('preorders')
+      .select('total_price, created_at')
+      .neq('status', 'CANCELLED')
+      .gte('created_at', startDate)
+      .lte('created_at', endDate);
+
+    if (preorderError) throw preorderError;
+
     const productRevenueMap: Record<string, { product_id: string; name: string; revenue: number; quantity: number }> = {};
+    let totalPreorderRevenue = 0;
+
+    if (preorders) {
+      for (const order of preorders) {
+        const orderDate = new Date(order.created_at);
+        const orderMonth = orderDate.getUTCMonth() + 1;
+        if (orderMonth !== month) continue;
+        totalPreorderRevenue += Number(order.total_price);
+      }
+    }
 
     if (orders) {
       for (const order of orders) {
@@ -90,7 +132,8 @@ export class ReportService {
     return {
       year,
       month,
-      products: productRevenueList
+      products: productRevenueList,
+      totalPreorderRevenue
     };
   }
 }

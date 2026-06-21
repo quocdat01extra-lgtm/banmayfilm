@@ -3,24 +3,30 @@
 import React, { useState } from 'react';
 import { Product, formatVND } from './ProductCard';
 import { useCart } from '@/contexts/CartContext';
+import { usePreorder } from '@/contexts/PreorderContext';
 import { useCompare } from '@/contexts/CompareContext';
 import { ShoppingCart, ArrowLeftRight, X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { ProductReviews } from './ProductReviews';
 import { fetchAPI } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 interface ProductModalProps {
   product: Product;
   onClose: () => void;
+  isPreorder?: boolean;
 }
 
-export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
+export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, isPreorder }) => {
   const { addToCart } = useCart();
+  const { addToPreorder } = usePreorder();
   const { addToCompare } = useCompare();
+  const router = useRouter();
   const [mediaIndex, setMediaIndex] = useState(0);
   const [productStats, setProductStats] = useState({
     avg_rating: product.avg_rating || 0,
     total_reviews: product.total_reviews || 0
   });
+  const [selectedColor, setSelectedColor] = useState<{name: string, quantity: number} | null>(null);
 
   const mediaList = product.product_media && product.product_media.length > 0 
     ? product.product_media.sort((a, b) => a.display_order - b.display_order)
@@ -37,13 +43,32 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
   };
 
   const handleAddToCart = () => {
-    addToCart({
-      product_id: product.id,
-      name: product.name,
-      price: product.price,
-      image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url
-    });
-    alert(`Đã thêm ${product.name} vào giỏ hàng.`);
+    const hasColors = product.product_color_variants && product.product_color_variants.length > 0;
+    if (hasColors && !selectedColor) {
+      alert('Vui lòng chọn màu sắc.');
+      return;
+    }
+
+    const priceToUse = isPreorder ? Math.round(product.price * 0.5) : product.price;
+
+    if (isPreorder) {
+      addToPreorder({
+        product_id: product.id,
+        name: hasColors ? `${product.name} - ${selectedColor!.name}` : product.name,
+        price: priceToUse,
+        image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url
+      });
+      router.push('/preorder');
+      onClose();
+    } else {
+      addToCart({
+        product_id: product.id,
+        name: hasColors ? `${product.name} - ${selectedColor!.name}` : product.name,
+        price: priceToUse,
+        image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url
+      });
+      alert(`Đã thêm ${product.name} vào giỏ hàng.`);
+    }
   };
 
   const handleAddToCompare = () => {
@@ -328,26 +353,85 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
               </div>
             </div>
 
+            {/* Color Selection */}
+            {product.product_color_variants && product.product_color_variants.length > 0 && (
+              <div style={{ marginBottom: '15px' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '8px' }}>Màu sắc:</h4>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  {product.product_color_variants.map((v: any) => (
+                    <button
+                      key={v.id}
+                      onClick={() => setSelectedColor({ name: v.color_name, quantity: v.quantity })}
+                      disabled={v.quantity <= 0 && !isPreorder}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '4px',
+                        border: selectedColor?.name === v.color_name ? '2px solid var(--accent)' : '1px solid var(--border-color)',
+                        backgroundColor: selectedColor?.name === v.color_name ? 'rgba(184, 134, 11, 0.1)' : 'var(--bg-primary)',
+                        color: (v.quantity <= 0 && !isPreorder) ? 'var(--text-secondary)' : 'var(--text-primary)',
+                        cursor: (v.quantity <= 0 && !isPreorder) ? 'not-allowed' : 'pointer',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                        opacity: (v.quantity <= 0 && !isPreorder) ? 0.6 : 1
+                      }}
+                    >
+                      {v.color_name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Price */}
             <div style={{ marginBottom: '20px' }}>
-              <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                {formatVND(product.price)}
-              </span>
-              <span style={{ marginLeft: '12px', fontSize: '0.85rem', color: product.quantity > 0 ? 'var(--text-secondary)' : 'var(--danger)', fontWeight: 600 }}>
-                {product.quantity > 0 ? `Còn lại: ${product.quantity}` : 'Hết hàng'}
-              </span>
+              {isPreorder ? (
+                <>
+                  <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    {formatVND(Math.round(product.price * 0.5))}
+                  </span>
+                  <span style={{ marginLeft: '12px', fontSize: '0.85rem', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>
+                    {formatVND(product.price)}
+                  </span>
+                  <span style={{ marginLeft: '12px', fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 600 }}>
+                    (Cọc 50%)
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    {formatVND(product.price)}
+                  </span>
+                  <span style={{ marginLeft: '12px', fontSize: '0.85rem', color: selectedColor ? (selectedColor.quantity > 0 ? 'var(--text-secondary)' : 'var(--danger)') : (product.quantity > 0 ? 'var(--text-secondary)' : 'var(--danger)'), fontWeight: 600 }}>
+                    {selectedColor 
+                      ? (selectedColor.quantity > 0 ? `Còn lại: ${selectedColor.quantity}` : 'Hết hàng')
+                      : (product.product_color_variants && product.product_color_variants.length > 0 
+                          ? '' 
+                          : (product.quantity > 0 ? `Còn lại: ${product.quantity}` : 'Hết hàng'))
+                    }
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Action buttons */}
             <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
               <button
                 onClick={handleAddToCart}
-                disabled={product.quantity <= 0}
+                disabled={(!isPreorder && product.quantity <= 0) || !!(product.product_color_variants && product.product_color_variants.length > 0 && !selectedColor)}
                 className="btn btn-primary"
                 style={{ flexGrow: 2, padding: '12px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
               >
-                <ShoppingCart size={18} />
-                <span style={{ textAlign: 'left', lineHeight: '1.2' }}>Thêm vào<br/>giỏ hàng</span>
+                {isPreorder ? (
+                  <>
+                    <ShoppingCart size={18} />
+                    <span style={{ textAlign: 'left', lineHeight: '1.2' }}>Pre-order<br/>ngay</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={18} />
+                    <span style={{ textAlign: 'left', lineHeight: '1.2' }}>Thêm vào<br/>giỏ hàng</span>
+                  </>
+                )}
               </button>
               <button
                 onClick={handleAddToCompare}

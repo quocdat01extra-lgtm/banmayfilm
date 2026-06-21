@@ -56,6 +56,8 @@ interface Product {
     id: string;
     name: string;
   };
+  allow_preorder?: boolean;
+  product_color_variants?: { id?: string; color_name: string; quantity: number }[];
 }
 
 interface OrderItem {
@@ -85,7 +87,7 @@ interface Order {
 export default function AdminDashboardPage() {
   const { isAdmin, isInitialized, token, logout } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'products' | 'banners' | 'orders' | 'reports'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'banners' | 'orders' | 'preorders' | 'reports'>('products');
 
   // API Config State
   const [apiUrl, setApiUrl] = useState('');
@@ -95,6 +97,7 @@ export default function AdminDashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [preorders, setPreorders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modal States
@@ -115,7 +118,9 @@ export default function AdminDashboardPage() {
     specifications: '',
     price: 0,
     quantity: 0,
-    is_active: true
+    is_active: true,
+    allow_preorder: false,
+    color_variants: [] as { id?: string; color_name: string; quantity: number }[]
   });
   
   const [cameraSpecs, setCameraSpecs] = useState({
@@ -175,6 +180,7 @@ export default function AdminDashboardPage() {
     year: number;
     month: number;
     products: { product_id: string; name: string; revenue: number; quantity: number }[];
+    totalPreorderRevenue?: number;
   } | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
@@ -219,6 +225,9 @@ export default function AdminDashboardPage() {
 
       const orderData = await fetchAPI('/api/orders');
       setOrders(orderData || []);
+
+      const preorderData = await fetchAPI('/api/preorders');
+      setPreorders(preorderData || []);
 
       // Load report
       const repData = await fetchAPI(`/api/reports/revenue?year=${reportYear}`);
@@ -311,7 +320,9 @@ export default function AdminDashboardPage() {
       specifications: '',
       price: 0,
       quantity: 0,
-      is_active: true
+      is_active: true,
+      allow_preorder: false,
+      color_variants: []
     });
     setCameraSpecs({
       tieu_cu: '', khau_do: '', chat_luong_anh: '', af: '', chong_nuoc: '', kich_thuoc: '', loai_pin: ''
@@ -328,7 +339,9 @@ export default function AdminDashboardPage() {
       specifications: product.specifications,
       price: product.price,
       quantity: product.quantity,
-      is_active: product.is_active
+      is_active: product.is_active,
+      allow_preorder: product.allow_preorder || false,
+      color_variants: product.product_color_variants || []
     });
 
     const catName = categories.find(c => c.id === product.category_id)?.name;
@@ -360,11 +373,18 @@ export default function AdminDashboardPage() {
         finalSpecs = JSON.stringify(filmSpecs);
       }
 
+      let computedQuantity = Number(productForm.quantity);
+      if (productForm.color_variants && productForm.color_variants.length > 0) {
+        computedQuantity = productForm.color_variants.reduce((acc, curr) => acc + Number(curr.quantity), 0);
+      }
+
       const payload = {
         ...productForm,
         specifications: finalSpecs,
         price: Number(productForm.price),
-        quantity: Number(productForm.quantity)
+        quantity: computedQuantity,
+        allow_preorder: productForm.allow_preorder,
+        color_variants: productForm.color_variants
       };
 
       if (selectedProduct) {
@@ -552,7 +572,27 @@ export default function AdminDashboardPage() {
               cursor: 'pointer'
             }}
           >
-            <ShoppingBag size={16} /> Lịch sử đơn hàng
+            <ShoppingBag size={16} /> Lịch sử đơn mua
+          </button>
+
+          <button
+            onClick={() => setActiveTab('preorders')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              width: '100%',
+              padding: '10px 12px',
+              border: 'none',
+              borderRadius: '4px',
+              backgroundColor: activeTab === 'preorders' ? 'var(--bg-dark)' : 'transparent',
+              color: activeTab === 'preorders' ? 'var(--bg-primary)' : 'var(--text-primary)',
+              fontWeight: activeTab === 'preorders' ? 600 : 500,
+              textAlign: 'left',
+              cursor: 'pointer'
+            }}
+          >
+            <Calendar size={16} /> Đơn hàng đặt trước
           </button>
 
           <button
@@ -717,11 +757,77 @@ export default function AdminDashboardPage() {
             {activeTab === 'orders' && (
               <div>
                 <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
-                  Lịch sử đơn hàng
+                  Lịch sử đơn mua
                 </h2>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                   {orders.map((order) => (
+                    <div
+                      key={order.id}
+                      className="card"
+                      onClick={() => openOrderDetail(order)}
+                      style={{
+                        cursor: 'pointer',
+                        padding: '16px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        height: '100%',
+                        position: 'relative'
+                      }}
+                    >
+                      <div>
+                        {/* Order status label */}
+                        <span style={{
+                          position: 'absolute',
+                          top: '15px',
+                          right: '15px',
+                          fontSize: '0.75rem',
+                          padding: '2px 8px',
+                          borderRadius: '10px',
+                          fontWeight: 600,
+                          backgroundColor:
+                            order.status === 'COMPLETED' ? 'rgba(39,174,96,0.15)' :
+                            order.status === 'CANCELLED' ? 'rgba(192,57,43,0.15)' :
+                            'rgba(184,134,11,0.15)',
+                          color:
+                            order.status === 'COMPLETED' ? 'var(--success)' :
+                            order.status === 'CANCELLED' ? 'var(--danger)' :
+                            'var(--accent)'
+                        }}>
+                          {order.status}
+                        </span>
+
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '10px', paddingRight: '70px' }}>{order.customer_name}</h3>
+                        
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                          {order.items.map(item => `${item.name} (${item.quantity})`).join(', ')}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '10px', marginTop: '10px' }}>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                          {new Date(order.created_at).toLocaleDateString('vi-VN')}
+                        </span>
+                        <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                          {formatVND(order.total_price)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Preorders history management tab */}
+            {activeTab === 'preorders' && (
+              <div>
+                <h2 style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-heading)', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '15px' }}>
+                  Đơn hàng đặt trước
+                </h2>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                  {preorders.map((order) => (
                     <div
                       key={order.id}
                       className="card"
@@ -957,6 +1063,13 @@ export default function AdminDashboardPage() {
                                 </table>
                               </div>
                             )}
+
+                            {monthlyDetail.totalPreorderRevenue !== undefined && monthlyDetail.totalPreorderRevenue > 0 && (
+                              <div style={{ marginTop: '20px', padding: '15px', backgroundColor: 'var(--bg-secondary)', borderLeft: '4px solid var(--accent)', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Tổng doanh thu Pre-order:</span>
+                                <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent)' }}>{formatVND(monthlyDetail.totalPreorderRevenue)}</span>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -1019,14 +1132,87 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Số lượng trong kho *</label>
-                <input
-                  type="number"
-                  required
-                  className="form-control"
-                  value={productForm.quantity}
-                  onChange={(e) => setProductForm({ ...productForm, quantity: Number(e.target.value) })}
-                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label className="form-label" style={{ marginBottom: 0 }}>Biến thể màu sắc & Số lượng kho</label>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setProductForm({
+                        ...productForm,
+                        color_variants: [...productForm.color_variants, { color_name: '', quantity: 0 }]
+                      });
+                    }}
+                    className="btn btn-secondary" 
+                    style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                  >
+                    <Plus size={14} /> Thêm màu
+                  </button>
+                </div>
+                
+                {productForm.color_variants.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '10px' }}>
+                    {productForm.color_variants.map((variant, index) => (
+                      <div key={index} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Màu (VD: Đen, Bạc...)"
+                          className="form-control"
+                          value={variant.color_name}
+                          onChange={(e) => {
+                            const newVariants = [...productForm.color_variants];
+                            newVariants[index].color_name = e.target.value;
+                            setProductForm({ ...productForm, color_variants: newVariants });
+                          }}
+                          style={{ flex: 1 }}
+                        />
+                        <input
+                          type="number"
+                          required
+                          min="0"
+                          placeholder="SL"
+                          className="form-control"
+                          value={variant.quantity}
+                          onChange={(e) => {
+                            const newVariants = [...productForm.color_variants];
+                            newVariants[index].quantity = Number(e.target.value);
+                            setProductForm({ ...productForm, color_variants: newVariants });
+                          }}
+                          style={{ width: '100px' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newVariants = productForm.color_variants.filter((_, i) => i !== index);
+                            setProductForm({ ...productForm, color_variants: newVariants });
+                          }}
+                          className="btn btn-outline-danger"
+                          style={{ padding: '8px' }}
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'right', fontWeight: 600 }}>
+                      Tổng số lượng: {productForm.color_variants.reduce((acc, curr) => acc + Number(curr.quantity), 0)}
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      className="form-control"
+                      placeholder="Số lượng trong kho"
+                      value={productForm.quantity}
+                      onChange={(e) => setProductForm({ ...productForm, quantity: Number(e.target.value) })}
+                    />
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                      Sản phẩm không có biến thể màu, nhập trực tiếp số lượng.
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
@@ -1097,6 +1283,16 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setProductForm({ ...productForm, is_active: e.target.checked })}
                 />
                 <label htmlFor="prod-active" style={{ fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>Bật kinh doanh sản phẩm</label>
+              </div>
+
+              <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input
+                  type="checkbox"
+                  id="prod-preorder"
+                  checked={productForm.allow_preorder}
+                  onChange={(e) => setProductForm({ ...productForm, allow_preorder: e.target.checked })}
+                />
+                <label htmlFor="prod-preorder" style={{ fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>Cho phép Pre-order</label>
               </div>
 
               <button type="submit" className="btn btn-accent" style={{ width: '100%', padding: '12px', marginTop: '10px' }}>

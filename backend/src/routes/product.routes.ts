@@ -31,7 +31,7 @@ router.get('/:id', async (req, res) => {
 // POST create product - Admin
 router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { name, category_id, specifications, price, quantity, is_active } = req.body;
+    const { name, category_id, specifications, price, quantity, is_active, allow_preorder, color_variants } = req.body;
     
     if (!name || !category_id || price === undefined || quantity === undefined) {
       return res.status(400).json({ message: 'Vui lòng cung cấp đầy đủ thông tin bắt buộc.' });
@@ -43,7 +43,9 @@ router.post('/', authMiddleware, async (req, res) => {
       specifications: specifications || '',
       price: parseInt(price),
       quantity: parseInt(quantity),
-      is_active: is_active !== undefined ? is_active : true
+      is_active: is_active !== undefined ? is_active : true,
+      allow_preorder: allow_preorder !== undefined ? allow_preorder : false,
+      color_variants: color_variants
     });
     
     return res.status(201).json(product);

@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { fetchAPI } from '@/lib/api';
 import { Product, formatVND } from '@/components/ProductCard';
 import { useCart } from '@/contexts/CartContext';
+import { usePreorder } from '@/contexts/PreorderContext';
 import { useCompare } from '@/contexts/CompareContext';
 import { ShoppingCart, ArrowLeftRight, ChevronLeft, ChevronRight, ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
@@ -13,14 +14,20 @@ import { ProductReviews } from '@/components/ProductReviews';
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isPreorderQuery = searchParams.get('preorder') === 'true';
   const id = params.id as string;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState<{name: string, quantity: number} | null>(null);
+  // Optional query param for preorder mode if navigated from a preorder context
+  const [isPreorderMode, setIsPreorderMode] = useState(isPreorderQuery);
 
   const { addToCart } = useCart();
+  const { addToPreorder } = usePreorder();
   const { addToCompare } = useCompare();
 
   useEffect(() => {
@@ -32,7 +39,12 @@ export default function ProductDetailPage() {
         if (!data) {
           setError('Không tìm thấy sản phẩm.');
         } else {
-          setProduct(data);
+          if (data) {
+            setProduct(data);
+            if (isPreorderQuery && !data.allow_preorder) {
+              setIsPreorderMode(false);
+            }
+          }
         }
       } catch (err) {
         console.error('Failed to fetch product:', err);
@@ -78,14 +90,32 @@ export default function ProductDetailPage() {
     setMediaIndex((prev) => (prev === 0 ? mediaList.length - 1 : prev - 1));
   };
 
-  const handleAddToCart = () => {
-    addToCart({
-      product_id: product.id,
-      name: product.name,
-      price: product.price,
-      image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url
-    });
-    alert(`Đã thêm ${product.name} vào giỏ hàng.`);
+  const handleAddToCart = (asPreorder: boolean = false) => {
+    const hasColors = product.product_color_variants && product.product_color_variants.length > 0;
+    if (hasColors && !selectedColor) {
+      alert('Vui lòng chọn màu sắc.');
+      return;
+    }
+
+    const priceToUse = asPreorder ? Math.round(product.price * 0.5) : product.price;
+
+    if (asPreorder) {
+      addToPreorder({
+        product_id: product.id,
+        name: hasColors ? `${product.name} - ${selectedColor!.name}` : product.name,
+        price: priceToUse,
+        image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url
+      });
+      router.push('/preorder');
+    } else {
+      addToCart({
+        product_id: product.id,
+        name: hasColors ? `${product.name} - ${selectedColor!.name}` : product.name,
+        price: priceToUse,
+        image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url
+      });
+      alert(`Đã thêm ${product.name} vào giỏ hàng.`);
+    }
   };
 
   const handleAddToCompare = () => {
@@ -376,6 +406,35 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
+          {/* Color Selection */}
+          {product.product_color_variants && product.product_color_variants.length > 0 && (
+            <div style={{ marginBottom: '20px' }}>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '10px' }}>Màu sắc:</h4>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {product.product_color_variants.map((v: any) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setSelectedColor({ name: v.color_name, quantity: v.quantity })}
+                    disabled={v.quantity <= 0 && !product.allow_preorder}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '4px',
+                      border: selectedColor?.name === v.color_name ? '2px solid var(--accent)' : '1px solid var(--border-color)',
+                      backgroundColor: selectedColor?.name === v.color_name ? 'rgba(184, 134, 11, 0.1)' : 'var(--bg-primary)',
+                      color: (v.quantity <= 0 && !product.allow_preorder) ? 'var(--text-secondary)' : 'var(--text-primary)',
+                      cursor: (v.quantity <= 0 && !product.allow_preorder) ? 'not-allowed' : 'pointer',
+                      fontWeight: 600,
+                      fontSize: '0.95rem',
+                      opacity: (v.quantity <= 0 && !product.allow_preorder) ? 0.6 : 1
+                    }}
+                  >
+                    {v.color_name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Price & Stock */}
           <div style={{
             marginBottom: '25px',
@@ -388,42 +447,97 @@ export default function ProductDetailPage() {
             justifyContent: 'space-between'
           }}>
             <div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Giá bán:</div>
-              <span style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                {formatVND(product.price)}
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                {isPreorderMode ? 'Giá cọc (50%):' : 'Giá bán:'}
+              </div>
+              <span style={{ fontSize: '1.6rem', fontWeight: 800, color: isPreorderMode ? 'var(--accent)' : 'var(--text-primary)' }}>
+                {isPreorderMode ? formatVND(Math.round(product.price * 0.5)) : formatVND(product.price)}
               </span>
             </div>
-            <span style={{
-              padding: '6px 12px',
-              borderRadius: '4px',
-              fontSize: '0.9rem',
-              backgroundColor: product.quantity > 0 ? 'rgba(39, 174, 96, 0.1)' : 'rgba(192, 57, 43, 0.1)',
-              color: product.quantity > 0 ? 'var(--success)' : 'var(--danger)',
-              fontWeight: 600
-            }}>
-              {product.quantity > 0 ? `Còn lại: ${product.quantity}` : 'Hết hàng'}
-            </span>
+            
+            {!isPreorderMode && (
+              <span style={{
+                padding: '6px 12px',
+                borderRadius: '4px',
+                fontSize: '0.9rem',
+                backgroundColor: (selectedColor ? selectedColor.quantity > 0 : product.quantity > 0) ? 'rgba(39, 174, 96, 0.1)' : 'rgba(192, 57, 43, 0.1)',
+                color: (selectedColor ? selectedColor.quantity > 0 : product.quantity > 0) ? 'var(--success)' : 'var(--danger)',
+                fontWeight: 600
+              }}>
+                {selectedColor 
+                  ? (selectedColor.quantity > 0 ? `Còn lại: ${selectedColor.quantity}` : 'Hết hàng')
+                  : (product.product_color_variants && product.product_color_variants.length > 0 
+                      ? 'Chọn màu để xem số lượng' 
+                      : (product.quantity > 0 ? `Còn lại: ${product.quantity}` : 'Hết hàng'))
+                }
+              </span>
+            )}
+            {isPreorderMode && (
+              <span style={{
+                padding: '6px 12px',
+                borderRadius: '4px',
+                fontSize: '0.9rem',
+                backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                color: 'var(--accent)',
+                fontWeight: 600
+              }}>
+                Pre-order
+              </span>
+            )}
           </div>
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', gap: '16px' }}>
-            <button
-              onClick={handleAddToCart}
-              disabled={product.quantity <= 0}
-              className="btn btn-primary"
-              style={{ flexGrow: 2, padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-            >
-              <ShoppingCart size={20} />
-              <span style={{ textAlign: 'left', lineHeight: '1.2' }}>Thêm vào<br/>giỏ hàng</span>
-            </button>
-            <button
-              onClick={handleAddToCompare}
-              className="btn btn-secondary"
-              style={{ flexGrow: 1, padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-            >
-              <ArrowLeftRight size={20} />
-              <span style={{ textAlign: 'left', lineHeight: '1.2' }}>So sánh<br/>sản phẩm</span>
-            </button>
+          <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+            {!isPreorderMode ? (
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <button
+                  onClick={() => handleAddToCart(false)}
+                  disabled={product.quantity <= 0 || !!(product.product_color_variants && product.product_color_variants.length > 0 && !selectedColor) || !!(selectedColor && selectedColor.quantity <= 0)}
+                  className="btn btn-primary"
+                  style={{ flexGrow: 2, padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  <ShoppingCart size={20} />
+                  <span style={{ textAlign: 'left', lineHeight: '1.2' }}>Thêm vào<br/>giỏ hàng</span>
+                </button>
+                <button
+                  onClick={handleAddToCompare}
+                  className="btn btn-secondary"
+                  style={{ flexGrow: 1, padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  <ArrowLeftRight size={20} />
+                  <span style={{ textAlign: 'left', lineHeight: '1.2' }}>So sánh<br/>sản phẩm</span>
+                </button>
+              </div>
+            ) : null}
+            
+            {product.allow_preorder && (
+              <button
+                onClick={() => handleAddToCart(true)}
+                disabled={!!(product.product_color_variants && product.product_color_variants.length > 0 && !selectedColor)}
+                className={isPreorderMode ? "btn btn-primary" : "btn btn-outline-primary"}
+                style={isPreorderMode ? {
+                  width: '100%', padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                } : {
+                  width: '100%', padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: '2px solid var(--accent)', color: 'var(--accent)', fontWeight: 700, backgroundColor: 'rgba(184, 134, 11, 0.05)'
+                }}
+              >
+                <ShoppingCart size={20} />
+                <span>Pre-order ngay (Cọc 50%: {formatVND(Math.round(product.price * 0.5))})</span>
+              </button>
+            )}
+            
+            {isPreorderMode && (
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <button
+                  onClick={handleAddToCompare}
+                  className="btn btn-secondary"
+                  style={{ flexGrow: 1, padding: '15px', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                >
+                  <ArrowLeftRight size={20} />
+                  <span style={{ textAlign: 'left', lineHeight: '1.2' }}>So sánh<br/>sản phẩm</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Product Reviews */}

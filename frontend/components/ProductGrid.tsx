@@ -15,6 +15,7 @@ export const ProductGrid: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isPreorderView, setIsPreorderView] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Fetch categories & products on load
@@ -38,10 +39,12 @@ export const ProductGrid: React.FC = () => {
     loadData();
   }, []);
 
-  // Filter products by selected category
-  const filteredProducts = selectedCategory
-    ? products.filter((p) => p.category_id === selectedCategory)
-    : products;
+  // Filter products by selected category or preorder
+  const filteredProducts = isPreorderView
+    ? products.filter((p) => p.allow_preorder)
+    : selectedCategory
+      ? products.filter((p) => p.category_id === selectedCategory)
+      : products;
 
   if (loading) {
     return (
@@ -91,26 +94,29 @@ export const ProductGrid: React.FC = () => {
                 padding: '10px 12px',
                 border: 'none',
                 borderRadius: '4px',
-                backgroundColor: selectedCategory === null ? 'var(--bg-dark)' : 'transparent',
-                color: selectedCategory === null ? 'var(--bg-primary)' : 'var(--text-primary)',
-                fontWeight: selectedCategory === null ? 600 : 500,
+                backgroundColor: selectedCategory === null && !isPreorderView ? 'var(--bg-dark)' : 'transparent',
+                color: selectedCategory === null && !isPreorderView ? 'var(--bg-primary)' : 'var(--text-primary)',
+                fontWeight: selectedCategory === null && !isPreorderView ? 600 : 500,
                 cursor: 'pointer',
                 transition: 'var(--transition-fast)'
               }}
               onMouseOver={(e) => {
-                if (selectedCategory !== null) e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+                if (selectedCategory !== null || isPreorderView) e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
               }}
               onMouseOut={(e) => {
-                if (selectedCategory !== null) e.currentTarget.style.backgroundColor = 'transparent';
+                if (selectedCategory !== null || isPreorderView) e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              Tất cả sản phẩm
+              Tất cả
             </button>
           </li>
           {categories.map((cat) => (
             <li key={cat.id}>
               <button
-                onClick={() => setSelectedCategory(cat.id)}
+                onClick={() => {
+                  setSelectedCategory(cat.id);
+                  setIsPreorderView(false);
+                }}
                 style={{
                   width: '100%',
                   textAlign: 'left',
@@ -134,6 +140,34 @@ export const ProductGrid: React.FC = () => {
               </button>
             </li>
           ))}
+          <li>
+            <button
+              onClick={() => {
+                setSelectedCategory(null);
+                setIsPreorderView(true);
+              }}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '10px 12px',
+                border: '2px solid var(--accent)',
+                borderRadius: '4px',
+                backgroundColor: isPreorderView ? 'rgba(184, 134, 11, 0.15)' : 'transparent',
+                color: isPreorderView ? 'var(--accent)' : 'var(--text-primary)',
+                fontWeight: isPreorderView ? 700 : 600,
+                cursor: 'pointer',
+                transition: 'var(--transition-fast)'
+              }}
+              onMouseOver={(e) => {
+                if (!isPreorderView) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.05)';
+              }}
+              onMouseOut={(e) => {
+                if (!isPreorderView) e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              Hàng Pre-order
+            </button>
+          </li>
         </ul>
       </div>
 
@@ -141,9 +175,11 @@ export const ProductGrid: React.FC = () => {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
-            {selectedCategory 
-              ? categories.find(c => c.id === selectedCategory)?.name 
-              : 'Tất cả sản phẩm'
+            {isPreorderView
+              ? 'Hàng Pre-order'
+              : selectedCategory 
+                ? categories.find(c => c.id === selectedCategory)?.name 
+                : 'Tất cả'
             }
           </h2>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
@@ -172,6 +208,7 @@ export const ProductGrid: React.FC = () => {
               <ProductCard
                 key={product.id}
                 product={product}
+                isPreorderView={isPreorderView}
               />
             ))}
           </div>

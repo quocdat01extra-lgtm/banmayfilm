@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
+import { PreorderProvider } from '@/contexts/PreorderContext';
 import { CompareProvider } from '@/contexts/CompareContext';
 import Header from '@/components/Header';
 import CompareBar from '@/components/CompareBar';
@@ -38,7 +39,8 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <CartProvider>
-            <CompareProvider>
+            <PreorderProvider>
+              <CompareProvider>
               <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
                 {/* Header Navigation */}
                 <Header />
@@ -82,7 +84,8 @@ export default function RootLayout({
                 {/* Fixed Bottom Comparison Bar */}
                 <CompareBar />
               </div>
-            </CompareProvider>
+              </CompareProvider>
+            </PreorderProvider>
           </CartProvider>
         </AuthProvider>
       </body>

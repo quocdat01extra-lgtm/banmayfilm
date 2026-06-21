@@ -20,6 +20,12 @@ export interface Product {
   quantity: number;
   is_active: boolean;
   product_media?: ProductMediaItem[];
+  product_color_variants?: {
+    id: string;
+    color_name: string;
+    quantity: number;
+  }[];
+  allow_preorder?: boolean;
   categories?: {
     id: string;
     name: string;
@@ -31,6 +37,7 @@ export interface Product {
 interface ProductCardProps {
   product: Product;
   onClick?: () => void;
+  isPreorderView?: boolean;
 }
 
 export const formatVND = (price: number) => {
@@ -40,7 +47,7 @@ export const formatVND = (price: number) => {
   }).format(price);
 };
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isPreorderView }) => {
   // Find first image for preview
   const firstImage = product.product_media
     ?.filter((m) => m.media_type === 'image')
@@ -51,7 +58,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
 
   return (
     <Link 
-      href={`/product/${product.id}`}
+      href={`/product/${product.id}${isPreorderView ? '?preorder=true' : ''}`}
       className="card" 
       onClick={onClick}
       style={{
@@ -125,9 +132,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
           <span style={{ 
             fontSize: '0.75rem', 
             fontWeight: 700, 
-            color: 'var(--text-primary)' 
+            color: isPreorderView ? 'var(--accent)' : 'var(--text-primary)' 
           }}>
-            {formatVND(product.price)}
+            {isPreorderView ? `Cọc 50%: ${formatVND(Math.round(product.price * 0.5))}` : formatVND(product.price)}
           </span>
           
           <span style={{ 

@@ -9,13 +9,15 @@ export interface ProductInput {
   price: number;
   quantity: number;
   is_active?: boolean;
+  allow_preorder?: boolean;
+  color_variants?: { id?: string; color_name: string; quantity: number }[];
 }
 
 export class ProductService {
   static async getAll(categoryId?: string) {
     let query = supabase
       .from('products')
-      .select('*, categories(id, name), product_media(*)')
+      .select('*, categories(id, name), product_media(*), product_color_variants(*)')
       .order('created_at', { ascending: false });
 
     if (categoryId) {
@@ -43,7 +45,7 @@ export class ProductService {
   static async getById(id: string) {
     const { data, error } = await supabase
       .from('products')
-      .select('*, categories(id, name), product_media(*)')
+      .select('*, categories(id, name), product_media(*), product_color_variants(*)')
       .eq('id', id)
       .single();
 
@@ -58,25 +60,50 @@ export class ProductService {
   }
 
   static async create(product: ProductInput) {
+    const { color_variants, ...productData } = product;
     const { data, error } = await supabase
       .from('products')
-      .insert([product])
+      .insert([productData])
       .select()
       .single();
 
     if (error) throw error;
+
+    if (color_variants && color_variants.length > 0) {
+      const variantsToInsert = color_variants.map(v => ({
+        product_id: data.id,
+        color_name: v.color_name,
+        quantity: v.quantity
+      }));
+      await supabase.from('product_color_variants').insert(variantsToInsert);
+    }
+
     return data;
   }
 
   static async update(id: string, updates: Partial<ProductInput>) {
+    const { color_variants, ...productData } = updates;
     const { data, error } = await supabase
       .from('products')
-      .update(updates)
+      .update(productData)
       .eq('id', id)
       .select()
       .single();
 
     if (error) throw error;
+
+    if (color_variants !== undefined) {
+      await supabase.from('product_color_variants').delete().eq('product_id', id);
+      if (color_variants.length > 0) {
+        const variantsToInsert = color_variants.map(v => ({
+          product_id: id,
+          color_name: v.color_name,
+          quantity: v.quantity
+        }));
+        await supabase.from('product_color_variants').insert(variantsToInsert);
+      }
+    }
+
     return data;
   }
 
