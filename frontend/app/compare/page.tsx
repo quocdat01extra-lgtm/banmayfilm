@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useCompare } from '@/contexts/CompareContext';
 import { formatVND } from '@/components/ProductCard';
-import { Trash2, ArrowLeft, ArrowLeftRight } from 'lucide-react';
+import { Trash2, ArrowLeft, ArrowLeftRight, Star } from 'lucide-react';
 
 export default function ComparePage() {
   const {
@@ -276,6 +276,41 @@ export default function ComparePage() {
                 })}
               </tr>
             ))}
+
+            {/* Row: Đánh giá (Inserted after specs) */}
+            <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+              <td style={{
+                padding: '14px',
+                fontWeight: 700,
+                backgroundColor: 'var(--bg-primary)',
+                borderRight: '1px solid var(--border-color)',
+                fontSize: '0.9rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                color: 'var(--text-secondary)'
+              }}>
+                Đánh giá
+              </td>
+              {compareList.map((product) => (
+                <td 
+                  key={product.id} 
+                  style={{
+                    padding: '14px',
+                    textAlign: 'center',
+                    borderRight: '1px solid var(--border-color)',
+                    fontWeight: 500
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.95rem' }}>
+                    <Star size={16} fill="#F59E0B" color="#F59E0B" />
+                    <span>{product.avg_rating || 0}</span>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                      ({product.total_reviews || 0})
+                    </span>
+                  </div>
+                </td>
+              ))}
+            </tr>
 
             {/* Row 3: Thông số khác (Raw text) */}
             {hasRawSpecs && (

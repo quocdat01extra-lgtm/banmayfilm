@@ -3,7 +3,7 @@
 import React from 'react';
 import { useCompare } from '@/contexts/CompareContext';
 import { formatVND } from './ProductCard';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Star } from 'lucide-react';
 
 export const CompareModal: React.FC = () => {
   const {
@@ -218,6 +218,41 @@ export const CompareModal: React.FC = () => {
                     })}
                   </tr>
                 ))}
+
+                {/* Row: Đánh giá */}
+                <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                  <td style={{
+                    padding: '12px 16px',
+                    fontWeight: 700,
+                    backgroundColor: 'var(--bg-primary)',
+                    borderRight: '1px solid var(--border-color)',
+                    fontSize: '0.85rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: 'var(--text-secondary)'
+                  }}>
+                    Đánh giá
+                  </td>
+                  {compareList.map((product) => (
+                    <td 
+                      key={product.id} 
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'center',
+                        borderRight: '1px solid var(--border-color)',
+                        fontWeight: 500
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.9rem' }}>
+                        <Star size={14} fill="#F59E0B" color="#F59E0B" />
+                        <span>{product.avg_rating || 0}</span>
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                          ({product.total_reviews || 0})
+                        </span>
+                      </div>
+                    </td>
+                  ))}
+                </tr>
 
                 {/* Row 3: Thông số khác (Raw text) */}
                 {hasRawSpecs && (

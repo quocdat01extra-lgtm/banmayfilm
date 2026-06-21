@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase.js';
 import { StorageService } from './storage.service.js';
+import { ReviewService } from './review.service.js';
 
 export interface ProductInput {
   name: string;
@@ -23,7 +24,20 @@ export class ProductService {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data;
+
+    // Attach review stats
+    const productsWithStats = await Promise.all(
+      (data || []).map(async (product) => {
+        const stats = await ReviewService.getAverageByProductId(product.id);
+        return {
+          ...product,
+          avg_rating: stats.average_rating,
+          total_reviews: stats.total_reviews
+        };
+      })
+    );
+
+    return productsWithStats;
   }
 
   static async getById(id: string) {
@@ -34,7 +48,13 @@ export class ProductService {
       .single();
 
     if (error) throw error;
-    return data;
+
+    const stats = await ReviewService.getAverageByProductId(id);
+    return {
+      ...data,
+      avg_rating: stats.average_rating,
+      total_reviews: stats.total_reviews
+    };
   }
 
   static async create(product: ProductInput) {

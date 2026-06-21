@@ -6,8 +6,9 @@ import { fetchAPI } from '@/lib/api';
 import { Product, formatVND } from '@/components/ProductCard';
 import { useCart } from '@/contexts/CartContext';
 import { useCompare } from '@/contexts/CompareContext';
-import { ShoppingCart, ArrowLeftRight, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, ArrowLeftRight, ChevronLeft, ChevronRight, ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
+import { ProductReviews } from '@/components/ProductReviews';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -94,7 +95,9 @@ export default function ProductDetailPage() {
       price: product.price,
       specifications: product.specifications,
       image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url,
-      category_name: product.categories?.name
+      category_name: product.categories?.name,
+      avg_rating: product.avg_rating,
+      total_reviews: product.total_reviews
     });
   };
 
@@ -330,8 +333,8 @@ export default function ProductDetailPage() {
             {product.name}
           </h1>
 
-          {/* Category tag */}
-          <div style={{ marginBottom: '20px' }}>
+          {/* Category tag & Rating */}
+          <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
             <span style={{
               backgroundColor: 'var(--bg-primary)',
               border: '1px solid var(--border-color)',
@@ -343,6 +346,13 @@ export default function ProductDetailPage() {
             }}>
               Danh mục: {product.categories?.name || 'Sản phẩm'}
             </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.95rem', fontWeight: 600 }}>
+              <Star size={18} fill="#F59E0B" color="#F59E0B" />
+              <span>{product.avg_rating || 0}</span>
+              <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+                ({product.total_reviews || 0} đánh giá)
+              </span>
+            </div>
           </div>
 
           {/* Technical Specifications */}
@@ -415,6 +425,18 @@ export default function ProductDetailPage() {
               <span style={{ textAlign: 'left', lineHeight: '1.2' }}>So sánh<br/>sản phẩm</span>
             </button>
           </div>
+
+          {/* Product Reviews */}
+          <ProductReviews 
+            productId={product.id} 
+            onReviewAdded={() => {
+              // Refresh product to get updated stats
+              fetchAPI(`/api/products/${product.id}`).then(setProduct).catch(console.error);
+            }}
+            onReviewDeleted={() => {
+              fetchAPI(`/api/products/${product.id}`).then(setProduct).catch(console.error);
+            }}
+          />
         </div>
       </div>
 

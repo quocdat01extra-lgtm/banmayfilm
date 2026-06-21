@@ -4,7 +4,9 @@ import React, { useState } from 'react';
 import { Product, formatVND } from './ProductCard';
 import { useCart } from '@/contexts/CartContext';
 import { useCompare } from '@/contexts/CompareContext';
-import { ShoppingCart, ArrowLeftRight, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, ArrowLeftRight, X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { ProductReviews } from './ProductReviews';
+import { fetchAPI } from '@/lib/api';
 
 interface ProductModalProps {
   product: Product;
@@ -15,6 +17,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
   const { addToCart } = useCart();
   const { addToCompare } = useCompare();
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [productStats, setProductStats] = useState({
+    avg_rating: product.avg_rating || 0,
+    total_reviews: product.total_reviews || 0
+  });
 
   const mediaList = product.product_media && product.product_media.length > 0 
     ? product.product_media.sort((a, b) => a.display_order - b.display_order)
@@ -47,7 +53,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
       price: product.price,
       specifications: product.specifications,
       image_url: product.product_media?.find(m => m.media_type === 'image')?.media_url,
-      category_name: product.categories?.name
+      category_name: product.categories?.name,
+      avg_rating: product.avg_rating,
+      total_reviews: product.total_reviews
     });
   };
 
@@ -278,8 +286,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
               {product.name}
             </h2>
 
-            {/* Category tag */}
-            <div style={{ marginBottom: '15px' }}>
+            {/* Category tag & Rating */}
+            <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
               <span style={{
                 backgroundColor: 'var(--bg-secondary)',
                 border: '1px solid var(--border-color)',
@@ -291,6 +299,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
               }}>
                 Danh mục: {product.categories?.name || 'Sản phẩm'}
               </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', fontWeight: 600 }}>
+                <Star size={16} fill="#F59E0B" color="#F59E0B" />
+                <span>{productStats.avg_rating}</span>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  ({productStats.total_reviews} đánh giá)
+                </span>
+              </div>
             </div>
 
             {/* Technical Specifications */}
@@ -344,6 +359,23 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) 
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Reviews Section spans full width below */}
+        <div style={{ marginTop: '20px' }}>
+          <ProductReviews 
+            productId={product.id} 
+            onReviewAdded={() => {
+              fetchAPI(`/api/products/${product.id}`).then(p => {
+                setProductStats({ avg_rating: p.avg_rating, total_reviews: p.total_reviews });
+              }).catch(console.error);
+            }}
+            onReviewDeleted={() => {
+              fetchAPI(`/api/products/${product.id}`).then(p => {
+                setProductStats({ avg_rating: p.avg_rating, total_reviews: p.total_reviews });
+              }).catch(console.error);
+            }}
+          />
         </div>
       </div>
 

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Star } from 'lucide-react';
 
 export interface ProductMediaItem {
   id: string;
@@ -23,6 +24,8 @@ export interface Product {
     id: string;
     name: string;
   };
+  avg_rating?: number;
+  total_reviews?: number;
 }
 
 interface ProductCardProps {
@@ -129,10 +132,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) =>
           
           <span style={{ 
             fontSize: '0.8rem', 
-            color: product.quantity > 0 ? 'var(--text-secondary)' : 'var(--danger)',
-            fontWeight: 500
+            color: 'var(--text-secondary)',
+            fontWeight: 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
           }}>
-            {product.quantity > 0 ? `Còn lại: ${product.quantity}` : 'Hết hàng'}
+            <Star size={14} fill="currentColor" color="currentColor" style={{ color: '#F59E0B' }} />
+            {product.avg_rating || 0}
           </span>
         </div>
       </div>

@@ -9,6 +9,8 @@ export interface CompareProduct {
   specifications: string;
   image_url?: string;
   category_name?: string;
+  avg_rating?: number;
+  total_reviews?: number;
 }
 
 interface CompareContextType {

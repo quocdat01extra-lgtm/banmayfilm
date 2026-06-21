@@ -9,6 +9,7 @@ import categoryRouter from './routes/category.routes.js';
 import productRouter from './routes/product.routes.js';
 import orderRouter from './routes/order.routes.js';
 import reportRouter from './routes/report.routes.js';
+import reviewRouter from './routes/review.routes.js';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/categories', categoryRouter);
 app.use('/api/products', productRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/reports', reportRouter);
+app.use('/api/reviews', reviewRouter);
 
 // Health check
 app.get('/health', (req, res) => {
