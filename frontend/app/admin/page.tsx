@@ -667,7 +667,22 @@ export default function AdminDashboardPage() {
                             <td style={{ padding: '10px', fontWeight: 600 }}>{p.name}</td>
                             <td style={{ padding: '10px' }}>{p.categories?.name}</td>
                             <td style={{ padding: '10px', fontWeight: 600 }}>{formatVND(p.price)}</td>
-                            <td style={{ padding: '10px' }}>{p.quantity}</td>
+                            <td style={{ padding: '10px' }}>
+                              {p.product_color_variants && p.product_color_variants.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.85rem' }}>
+                                  {p.product_color_variants.map((v, idx) => (
+                                    <span key={idx} style={{ color: 'var(--text-secondary)' }}>
+                                      {v.color_name}: <strong style={{ color: 'var(--text-primary)' }}>{v.quantity}</strong>
+                                    </span>
+                                  ))}
+                                  <span style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: '2px', borderTop: '1px dashed var(--border-color)', paddingTop: '2px' }}>
+                                    Tổng: {p.quantity}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span>{p.quantity}</span>
+                              )}
+                            </td>
                             <td style={{ padding: '10px' }}>
                               <span style={{
                                 padding: '2px 8px',
@@ -1089,7 +1104,7 @@ export default function AdminDashboardPage() {
       {/* MODAL 1: ADD/EDIT PRODUCT */}
       {isProductModalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content" style={{ padding: '24px', maxWidth: '600px' }}>
+          <div className="modal-content" style={{ padding: '24px', maxWidth: '600px', maxHeight: '80vh' }}>
             <button onClick={() => setProductModalOpen(false)} className="close-btn"><X size={18} /></button>
             <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '20px', fontFamily: 'var(--font-heading)' }}>
               {selectedProduct ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}
