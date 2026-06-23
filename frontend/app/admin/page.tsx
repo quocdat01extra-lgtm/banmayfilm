@@ -126,11 +126,14 @@ export default function AdminDashboardPage() {
   const [cameraSpecs, setCameraSpecs] = useState({
     tieu_cu: '',
     khau_do: '',
-    chat_luong_anh: '',
     af: '',
-    chong_nuoc: '',
     kich_thuoc: '',
-    loai_pin: ''
+    loai_pin: '',
+    man_lcd: 'Không',
+    dieu_chinh_flash: 'Không',
+    chong_mat_do: 'Không',
+    dieu_chinh_iso_tu_dong: 'Không',
+    thang_diem: ''
   });
 
   const [filmSpecs, setFilmSpecs] = useState({
@@ -325,7 +328,7 @@ export default function AdminDashboardPage() {
       color_variants: []
     });
     setCameraSpecs({
-      tieu_cu: '', khau_do: '', chat_luong_anh: '', af: '', chong_nuoc: '', kich_thuoc: '', loai_pin: ''
+      tieu_cu: '', khau_do: '', af: '', kich_thuoc: '', loai_pin: '', man_lcd: 'Không', dieu_chinh_flash: 'Không', chong_mat_do: 'Không', dieu_chinh_iso_tu_dong: 'Không', thang_diem: ''
     });
     setFilmSpecs({ kho_film: '', so_kieu: '', date: '' });
     setProductModalOpen(true);
@@ -349,7 +352,7 @@ export default function AdminDashboardPage() {
     
     // Reset first
     setCameraSpecs({
-      tieu_cu: '', khau_do: '', chat_luong_anh: '', af: '', chong_nuoc: '', kich_thuoc: '', loai_pin: ''
+      tieu_cu: '', khau_do: '', af: '', kich_thuoc: '', loai_pin: '', man_lcd: 'Không', dieu_chinh_flash: 'Không', chong_mat_do: 'Không', dieu_chinh_iso_tu_dong: 'Không', thang_diem: ''
     });
     setFilmSpecs({ kho_film: '', so_kieu: '', date: '' });
     
@@ -1243,16 +1246,8 @@ export default function AdminDashboardPage() {
                       <input className="form-control" value={cameraSpecs.khau_do} onChange={e => setCameraSpecs({...cameraSpecs, khau_do: e.target.value})} placeholder="VD: f/1.8" />
                     </div>
                     <div>
-                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Chất lượng ảnh</label>
-                      <input className="form-control" value={cameraSpecs.chat_luong_anh} onChange={e => setCameraSpecs({...cameraSpecs, chat_luong_anh: e.target.value})} placeholder="VD: 35mm Full Frame" />
-                    </div>
-                    <div>
                       <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>AF (Auto Focus)</label>
                       <input className="form-control" value={cameraSpecs.af} onChange={e => setCameraSpecs({...cameraSpecs, af: e.target.value})} placeholder="Có / Không" />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Chống nước</label>
-                      <input className="form-control" value={cameraSpecs.chong_nuoc} onChange={e => setCameraSpecs({...cameraSpecs, chong_nuoc: e.target.value})} placeholder="Có / Không" />
                     </div>
                     <div>
                       <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Kích thước</label>
@@ -1261,6 +1256,38 @@ export default function AdminDashboardPage() {
                     <div>
                       <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Loại pin</label>
                       <input className="form-control" value={cameraSpecs.loai_pin} onChange={e => setCameraSpecs({...cameraSpecs, loai_pin: e.target.value})} placeholder="VD: CR123A" />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Màn LCD</label>
+                      <select className="form-control" value={cameraSpecs.man_lcd} onChange={e => setCameraSpecs({...cameraSpecs, man_lcd: e.target.value})}>
+                        <option value="Không">Không</option>
+                        <option value="Có">Có</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Điều chỉnh Flash</label>
+                      <select className="form-control" value={cameraSpecs.dieu_chinh_flash} onChange={e => setCameraSpecs({...cameraSpecs, dieu_chinh_flash: e.target.value})}>
+                        <option value="Không">Không</option>
+                        <option value="Có">Có</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Chống mắt đỏ</label>
+                      <select className="form-control" value={cameraSpecs.chong_mat_do} onChange={e => setCameraSpecs({...cameraSpecs, chong_mat_do: e.target.value})}>
+                        <option value="Không">Không</option>
+                        <option value="Có">Có</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Điều chỉnh ISO tự động</label>
+                      <select className="form-control" value={cameraSpecs.dieu_chinh_iso_tu_dong} onChange={e => setCameraSpecs({...cameraSpecs, dieu_chinh_iso_tu_dong: e.target.value})}>
+                        <option value="Không">Không</option>
+                        <option value="Có">Có</option>
+                      </select>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ fontSize: '0.85rem', marginBottom: '4px', display: 'block', color: 'var(--text-secondary)' }}>Thang điểm</label>
+                      <input type="number" step="0.1" className="form-control" value={cameraSpecs.thang_diem} onChange={e => setCameraSpecs({...cameraSpecs, thang_diem: e.target.value})} placeholder="VD: 8.5" />
                     </div>
                   </div>
                 ) : categories.find(c => c.id === productForm.category_id)?.name === 'Film' ? (

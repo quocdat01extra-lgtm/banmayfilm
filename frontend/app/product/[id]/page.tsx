@@ -146,11 +146,14 @@ export default function ProductDetailPage() {
             <tbody>
               {parsed.tieu_cu && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600, width: '40%' }}>Tiêu cự</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.tieu_cu}</td></tr>}
               {parsed.khau_do && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Khẩu độ</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.khau_do}</td></tr>}
-              {parsed.chat_luong_anh && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Chất lượng ảnh</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.chat_luong_anh}</td></tr>}
               {parsed.af && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>AF</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.af}</td></tr>}
-              {parsed.chong_nuoc && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Chống nước</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.chong_nuoc}</td></tr>}
               {parsed.kich_thuoc && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Kích thước</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.kich_thuoc}</td></tr>}
               {parsed.loai_pin && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Loại pin</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.loai_pin}</td></tr>}
+              {parsed.man_lcd && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Màn LCD</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.man_lcd}</td></tr>}
+              {parsed.dieu_chinh_flash && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Điều chỉnh Flash</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.dieu_chinh_flash}</td></tr>}
+              {parsed.chong_mat_do && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Chống mắt đỏ</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.chong_mat_do}</td></tr>}
+              {parsed.dieu_chinh_iso_tu_dong && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Điều chỉnh ISO tự động</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.dieu_chinh_iso_tu_dong}</td></tr>}
+              {parsed.thang_diem && <tr><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)', fontWeight: 600 }}>Thang điểm</td><td style={{ padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>{parsed.thang_diem}</td></tr>}
             </tbody>
           </table>
         );

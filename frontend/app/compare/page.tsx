@@ -16,11 +16,14 @@ export default function ComparePage() {
   const specLabels: Record<string, string> = {
     tieu_cu: 'Tiêu cự',
     khau_do: 'Khẩu độ',
-    chat_luong_anh: 'Chất lượng ảnh',
     af: 'AF',
-    chong_nuoc: 'Chống nước',
     kich_thuoc: 'Kích thước',
     loai_pin: 'Loại pin',
+    man_lcd: 'Màn LCD',
+    dieu_chinh_flash: 'Điều chỉnh Flash',
+    chong_mat_do: 'Chống mắt đỏ',
+    dieu_chinh_iso_tu_dong: 'Điều chỉnh ISO tự động',
+    thang_diem: 'Thang điểm',
     kho_film: 'Khổ film',
     so_kieu: 'Số kiểu',
     date: 'Date'
